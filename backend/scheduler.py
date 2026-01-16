@@ -36,11 +36,10 @@ def run_scraper():
 if __name__ == "__main__":
     scheduler = BlockingScheduler()
     
-    # Schedule to run daily at 2:00 AM (you can change this)
-    # Format: hour=2, minute=0 means 2:00 AM every day
+    # Schedule to run every 2 days at 2:00 AM
     scheduler.add_job(
         run_scraper,
-        CronTrigger(hour=2, minute=0),  # Run at 2:00 AM daily
+        CronTrigger(day='*/2', hour=2, minute=0),  # Run every 2 days at 2:00 AM
         id='bongthom_scraper',
         name='BongThom Daily Job Scraper',
         replace_existing=True

@@ -24,14 +24,12 @@ services:
         flask db upgrade &&
         gunicorn -c gunicorn_config.py run:app
       "
+    env_file:
+      - ./backend/.env
     environment:
       FLASK_ENV: production
+      # Overrides or additional vars can remain here if needed
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-webcv_db}
-      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-me-in-production}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://152.42.177.31}
-      TESSERACT_CMD: /usr/bin/tesseract
-      POPPLER_PATH: /usr/bin
     volumes:
       - ./backend/uploads:/app/uploads
     depends_on:
@@ -42,6 +40,23 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - webcv_network
+
+  worker:
+    build: ./backend
+    container_name: webcv_worker
+    command: python scheduler.py
+    env_file:
+      - ./backend/.env
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-webcv_db}
+    depends_on:
+      db:
+        condition: service_healthy
+      backend:
+        condition: service_started
     networks:
       - webcv_network
 
