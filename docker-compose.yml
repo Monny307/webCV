@@ -38,6 +38,8 @@ services:
   frontend:
     build:
       context: .
+      args:
+        - NEXT_PUBLIC_API_URL=
     container_name: webcv_frontend
     environment:
       - NODE_ENV=production

@@ -36,15 +36,15 @@ export default function Settings() {
     try {
       const token = localStorage.getItem('access_token')
       const currentUser = localStorage.getItem('currentUser')
-      
+
       if (!token || !currentUser) {
         router.push('/login')
         return
       }
 
       const user = JSON.parse(currentUser)
-      
-      const response = await fetch('http://localhost:5000/api/profile', {
+
+      const response = await fetch('/api/profile', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -83,8 +83,8 @@ export default function Settings() {
     setSaving(true)
     try {
       const token = localStorage.getItem('access_token')
-      
-      const response = await fetch('http://localhost:5000/api/profile', {
+
+      const response = await fetch('/api/profile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -112,15 +112,15 @@ export default function Settings() {
 
   const handleDeleteAccount = async () => {
     const firstConfirm = confirm('⚠️ WARNING: Are you sure you want to delete your account? This will permanently delete:\n\n• Your profile and personal information\n• All uploaded CVs and applications\n• Saved jobs and job alerts\n• All notification history\n\nThis action CANNOT be undone!')
-    
+
     if (!firstConfirm) return
 
     const secondConfirm = confirm('This is your FINAL WARNING!\n\nType DELETE in the next prompt to confirm account deletion.')
-    
+
     if (!secondConfirm) return
 
     const userInput = prompt('Type DELETE (in uppercase) to permanently delete your account:')
-    
+
     if (userInput !== 'DELETE') {
       alert('Account deletion cancelled. You must type DELETE exactly.')
       return
@@ -128,7 +128,7 @@ export default function Settings() {
 
     try {
       const token = localStorage.getItem('access_token')
-      const response = await fetch('http://localhost:5000/api/auth/delete-account', {
+      const response = await fetch('/api/auth/delete-account', {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -193,8 +193,8 @@ export default function Settings() {
 
     try {
       const token = localStorage.getItem('access_token')
-      
-      const response = await fetch('http://localhost:5000/api/auth/change-password', {
+
+      const response = await fetch('/api/auth/change-password', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -243,13 +243,13 @@ export default function Settings() {
     }
 
     setUploadingPhoto(true)
-    
+
     try {
       const token = localStorage.getItem('access_token')
       const formData = new FormData()
       formData.append('profile_photo', file)
 
-      const response = await fetch('http://localhost:5000/api/profile/photo', {
+      const response = await fetch('/api/profile/photo', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -293,11 +293,11 @@ export default function Settings() {
           <div className="info-container" style={{ maxWidth: '1000px' }}>
             <h1>Settings</h1>
             <p className="info-subtitle">Manage your account settings and preferences</p>
-            
+
             {/* Settings Tabs */}
-            <div className="settings-tabs" style={{ 
-              display: 'flex', 
-              gap: '1rem', 
+            <div className="settings-tabs" style={{
+              display: 'flex',
+              gap: '1rem',
               borderBottom: '2px solid var(--light-bg)',
               marginTop: '2rem',
               marginBottom: '2rem'
@@ -340,7 +340,7 @@ export default function Settings() {
                 {/* Profile Photo Section */}
                 <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', marginBottom: '2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                   <h2 style={{ marginBottom: '1.5rem' }}>Profile Photo</h2>
-                  
+
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
                     <div style={{ position: 'relative' }}>
                       <div style={{
@@ -358,9 +358,9 @@ export default function Settings() {
                         boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                       }}>
                         {profilePhoto ? (
-                          <img 
-                            src={`http://localhost:5000${profilePhoto}`} 
-                            alt="Profile" 
+                          <img
+                            src={`${profilePhoto}`}
+                            alt="Profile"
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           />
                         ) : (
@@ -384,7 +384,7 @@ export default function Settings() {
                         </div>
                       )}
                     </div>
-                    
+
                     <div style={{ flex: 1 }}>
                       <input
                         type="file"
@@ -394,8 +394,8 @@ export default function Settings() {
                         style={{ display: 'none' }}
                         disabled={uploadingPhoto}
                       />
-                      <label 
-                        htmlFor="profile-photo-upload" 
+                      <label
+                        htmlFor="profile-photo-upload"
                         style={{
                           display: 'inline-block',
                           padding: '0.75rem 1.5rem',
@@ -420,7 +420,7 @@ export default function Settings() {
 
                 <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', marginBottom: '2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                   <h2 style={{ marginBottom: '1.5rem' }}>Account Information</h2>
-                  
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div>
                       <label htmlFor="fullname" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
@@ -511,9 +511,9 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  <button 
-                    onClick={handleSave} 
-                    className="btn-primary" 
+                  <button
+                    onClick={handleSave}
+                    className="btn-primary"
                     disabled={saving}
                     style={{ marginTop: '1.5rem' }}
                   >
@@ -524,14 +524,14 @@ export default function Settings() {
                 {/* Change Password */}
                 <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', marginBottom: '2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                   <h2 style={{ marginBottom: '1.5rem' }}>Change Password</h2>
-                  
+
                   {passwordError && (
-                    <div style={{ 
-                      background: '#fee2e2', 
-                      border: '1px solid #ef4444', 
-                      color: '#ef4444', 
-                      padding: '0.75rem', 
-                      borderRadius: '8px', 
+                    <div style={{
+                      background: '#fee2e2',
+                      border: '1px solid #ef4444',
+                      color: '#ef4444',
+                      padding: '0.75rem',
+                      borderRadius: '8px',
                       marginBottom: '1rem',
                       display: 'flex',
                       alignItems: 'center',
@@ -543,12 +543,12 @@ export default function Settings() {
                   )}
 
                   {passwordSuccess && (
-                    <div style={{ 
-                      background: '#dcfce7', 
-                      border: '1px solid #22c55e', 
-                      color: '#22c55e', 
-                      padding: '0.75rem', 
-                      borderRadius: '8px', 
+                    <div style={{
+                      background: '#dcfce7',
+                      border: '1px solid #22c55e',
+                      color: '#22c55e',
+                      padding: '0.75rem',
+                      borderRadius: '8px',
                       marginBottom: '1rem',
                       display: 'flex',
                       alignItems: 'center',
@@ -558,7 +558,7 @@ export default function Settings() {
                       {passwordSuccess}
                     </div>
                   )}
-                  
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div>
                       <label htmlFor="currentPassword" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
@@ -568,7 +568,7 @@ export default function Settings() {
                         type="password"
                         id="currentPassword"
                         value={passwordData.currentPassword}
-                        onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                        onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                         style={{
                           width: '100%',
                           padding: '0.75rem',
@@ -587,7 +587,7 @@ export default function Settings() {
                         type="password"
                         id="newPassword"
                         value={passwordData.newPassword}
-                        onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                         style={{
                           width: '100%',
                           padding: '0.75rem',
@@ -606,7 +606,7 @@ export default function Settings() {
                         type="password"
                         id="confirmPassword"
                         value={passwordData.confirmPassword}
-                        onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                         style={{
                           width: '100%',
                           padding: '0.75rem',
@@ -618,9 +618,9 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  <button 
-                    onClick={handlePasswordChange} 
-                    className="btn-primary" 
+                  <button
+                    onClick={handlePasswordChange}
+                    className="btn-primary"
                     style={{ marginTop: '1.5rem' }}
                     disabled={changingPassword}
                   >
@@ -642,7 +642,7 @@ export default function Settings() {
                   <p style={{ marginBottom: '1.5rem', color: 'var(--light-text)' }}>
                     Once you delete your account, there is no going back. Please be certain.
                   </p>
-                  <button 
+                  <button
                     onClick={handleDeleteAccount}
                     style={{
                       padding: '0.75rem 1.5rem',
@@ -666,7 +666,7 @@ export default function Settings() {
               <div className="settings-content">
                 <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                   <h2 style={{ marginBottom: '1.5rem' }}>Notification Preferences</h2>
-                  
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'var(--light-bg)', borderRadius: '8px' }}>
                       <div>

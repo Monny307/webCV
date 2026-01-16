@@ -21,11 +21,11 @@ export default function Login() {
   }
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/oauth/google'
+    window.location.href = '/api/auth/oauth/google'
   }
 
   const handleFacebookLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/oauth/facebook'
+    window.location.href = '/api/auth/oauth/facebook'
   }
 
   const handleSubmit = async (e: FormEvent) => {
@@ -34,7 +34,7 @@ export default function Login() {
     setLoading(true)
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.toLowerCase(), password })
@@ -48,7 +48,7 @@ export default function Login() {
           localStorage.setItem('refresh_token', data.refresh_token)
           localStorage.setItem('currentUser', JSON.stringify(data.user))
         }
-        
+
         if (data.user.role === 'admin') {
           router.push('/admin/dashboard')
         } else {
@@ -70,21 +70,21 @@ export default function Login() {
       <Head>
         <title>Login - AhhChip</title>
       </Head>
-      
+
       {loading && <LoadingOverlay message="Signing you in..." />}
-      
+
       <div className="auth-page">
         <button className="btn-back-auth" onClick={() => router.back()}>
           <i className="fas fa-arrow-left"></i>
         </button>
-        
+
         <div className="auth-container">
           <div className="auth-left auth-left-image">
-            <Image 
-              src="/signin.png" 
-              alt="Welcome Back" 
-              className="auth-bg-image" 
-              width={1200} 
+            <Image
+              src="/signin.png"
+              alt="Welcome Back"
+              className="auth-bg-image"
+              width={1200}
               height={1600}
               quality={95}
               priority
@@ -100,10 +100,10 @@ export default function Login() {
             <form className="auth-form" onSubmit={handleSubmit}>
               <div className="form-group-auth">
                 <label htmlFor="email">Email Address</label>
-                <input 
-                  type="email" 
-                  id="email" 
-                  name="email" 
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
                   placeholder="your@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -114,10 +114,10 @@ export default function Login() {
               <div className="form-group-auth">
                 <label htmlFor="password">Password</label>
                 <div className="password-input">
-                  <input 
+                  <input
                     type={showPassword ? 'text' : 'password'}
-                    id="password" 
-                    name="password" 
+                    id="password"
+                    name="password"
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -128,9 +128,9 @@ export default function Login() {
                   </button>
                 </div>
                 {error && (
-                  <div style={{ 
-                    color: '#ef4444', 
-                    fontSize: '0.875rem', 
+                  <div style={{
+                    color: '#ef4444',
+                    fontSize: '0.875rem',
                     marginTop: '0.5rem',
                     display: 'flex',
                     alignItems: 'center',
@@ -159,17 +159,17 @@ export default function Login() {
               </div>
 
               <div className="social-auth social-auth-icons">
-                <button 
-                  type="button" 
-                  className="btn-social-icon btn-social-google" 
+                <button
+                  type="button"
+                  className="btn-social-icon btn-social-google"
                   title="Sign in with Google"
                   onClick={handleGoogleLogin}
                 >
                   <i className="fab fa-google"></i>
                 </button>
-                <button 
-                  type="button" 
-                  className="btn-social-icon btn-social-facebook" 
+                <button
+                  type="button"
+                  className="btn-social-icon btn-social-facebook"
                   title="Sign in with Facebook"
                   onClick={handleFacebookLogin}
                 >

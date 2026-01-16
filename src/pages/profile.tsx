@@ -43,10 +43,10 @@ export default function Profile() {
       }
 
       // Fetch profile data
-      const profileResponse = await fetch('http://localhost:5000/api/profile', {
+      const profileResponse = await fetch('/api/profile', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
-      
+
       if (profileResponse.ok) {
         const profileData = await profileResponse.json()
         setProfileData({
@@ -66,10 +66,10 @@ export default function Profile() {
       }
 
       // Fetch CVs
-      const cvsResponse = await fetch('http://localhost:5000/api/profile/cvs', {
+      const cvsResponse = await fetch('/api/profile/cvs', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
-      
+
       if (cvsResponse.ok) {
         const cvsData = await cvsResponse.json()
         setPastCVs(cvsData.cvs || [])
@@ -135,14 +135,14 @@ export default function Profile() {
               <h2 style={{ marginBottom: '1.5rem' }}>Profile Photo</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
                 <div style={{ position: 'relative' }}>
-                  <Image 
-                    src={profilePhoto} 
-                    alt="Profile" 
-                    width={150} 
-                    height={150} 
+                  <Image
+                    src={profilePhoto}
+                    alt="Profile"
+                    width={150}
+                    height={150}
                     style={{ borderRadius: '50%', objectFit: 'cover' }}
                   />
-                  <button 
+                  <button
                     className="btn-edit-image"
                     onClick={handlePhotoClick}
                     style={{
@@ -165,9 +165,9 @@ export default function Profile() {
                   >
                     <i className="fas fa-camera"></i>
                   </button>
-                  <input 
+                  <input
                     ref={fileInputRef}
-                    type="file" 
+                    type="file"
                     accept="image/*"
                     onChange={handlePhotoChange}
                     style={{ display: 'none' }}
@@ -254,7 +254,7 @@ export default function Profile() {
               <h2 style={{ marginBottom: '1.5rem' }}>Past CVs</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {pastCVs.map((cv) => (
-                  <div 
+                  <div
                     key={cv.id}
                     style={{
                       border: cv.isCurrent ? '2px solid var(--primary-orange)' : '2px solid #e5e7eb',
@@ -273,7 +273,7 @@ export default function Profile() {
                         <h3 style={{ margin: 0, marginBottom: '0.25rem', fontSize: '1.1rem' }}>{cv.name}</h3>
                         <p style={{ margin: 0, color: 'var(--light-text)', fontSize: '0.9rem' }}>{cv.date}</p>
                         {cv.isCurrent && (
-                          <span style={{ 
+                          <span style={{
                             display: 'inline-block',
                             marginTop: '0.5rem',
                             padding: '0.25rem 0.75rem',
@@ -399,7 +399,7 @@ export default function Profile() {
                 <h2>View CV: {selectedCV}</h2>
                 <button className="close-btn" onClick={() => setShowCVViewer(false)}>&times;</button>
               </div>
-              
+
               <div style={{ padding: '2rem', background: '#f9fafb', borderRadius: '8px', minHeight: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ textAlign: 'center' }}>
                   <i className="fas fa-file-pdf" style={{ fontSize: '4rem', color: 'var(--primary-orange)', marginBottom: '1rem' }}></i>
@@ -407,7 +407,7 @@ export default function Profile() {
                   <p style={{ color: 'var(--light-text)', fontSize: '0.9rem' }}>Full PDF viewer would be integrated here</p>
                 </div>
               </div>
-              
+
               <div className="modal-actions">
                 <button className="btn-secondary" onClick={() => setShowCVViewer(false)}>
                   <i className="fas fa-times"></i> Close

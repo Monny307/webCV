@@ -116,7 +116,7 @@ export default function Home() {
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/jobs?per_page=100')
+      const response = await fetch('/api/jobs?per_page=100')
       const data = await response.json()
       if (data.success) {
         setJobs(data.jobs)
@@ -215,7 +215,7 @@ function CVSection() {
 
       setLoadingCVs(true)
       try {
-        const response = await fetch('http://localhost:5000/api/profile/cvs', {
+        const response = await fetch('/api/profile/cvs', {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         if (response.ok) {
@@ -1535,7 +1535,7 @@ function MyJobsSection() {
       if (!token) return
 
       try {
-        const response = await fetch('http://localhost:5000/api/profile/cvs', {
+        const response = await fetch('/api/profile/cvs', {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         if (response.ok) {
@@ -1563,7 +1563,7 @@ function MyJobsSection() {
 
       try {
         console.log('🔍 Fetching active CV keywords...')
-        const response = await fetch('http://localhost:5000/api/profile/cvs/active-keywords', {
+        const response = await fetch('/api/profile/cvs/active-keywords', {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         if (response.ok) {
@@ -1608,7 +1608,7 @@ function MyJobsSection() {
 
     // Fetch jobs matching keywords
     console.log('🌐 Fetching jobs from backend...')
-    const jobsResponse = await fetch('http://localhost:5000/api/jobs?per_page=100', {
+    const jobsResponse = await fetch('/api/jobs?per_page=100', {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
 
@@ -1690,7 +1690,7 @@ function MyJobsSection() {
 
       // Fetch active CV notifications
       console.log('🔔 Fetching Current CV Alert notifications...')
-      const activeCVRes = await fetch('http://localhost:5000/api/notifications/active-cv', {
+      const activeCVRes = await fetch('/api/notifications/active-cv', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       if (activeCVRes.ok) {
@@ -1701,7 +1701,7 @@ function MyJobsSection() {
 
       // Fetch all CVs notifications
       console.log('🔔 Fetching All CV Notifications...')
-      const allCVRes = await fetch('http://localhost:5000/api/notifications/all-cvs', {
+      const allCVRes = await fetch('/api/notifications/all-cvs', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       if (allCVRes.ok) {
@@ -1757,7 +1757,7 @@ function MyJobsSection() {
       const timeoutId = setTimeout(() => controller.abort(), 180000) // 3 minute timeout
 
       const token = localStorage.getItem('access_token')
-      const response = await fetch('http://localhost:5000/api/analyze-cv', {
+      const response = await fetch('/api/analyze-cv', {
         method: 'POST',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {},
         body: formData,
@@ -1798,7 +1798,7 @@ function MyJobsSection() {
       // Fetch actual jobs matching these titles from our backend
       if (jobTitles.length > 0) {
         const token = localStorage.getItem('access_token')
-        const jobsResponse = await fetch('http://localhost:5000/api/jobs?per_page=100', {
+        const jobsResponse = await fetch('/api/jobs?per_page=100', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         })
 
@@ -1874,7 +1874,7 @@ function MyJobsSection() {
           if (!token) return
 
           try {
-            const cvResponse = await fetch('http://localhost:5000/api/profile/cvs', {
+            const cvResponse = await fetch('/api/profile/cvs', {
               headers: { 'Authorization': `Bearer ${token}` }
             })
             if (cvResponse.ok) {
@@ -3065,7 +3065,7 @@ function MyJobsSection() {
                         if (token) {
                           setIsAnalyzingCV(true)
                           try {
-                            const response = await fetch(`http://localhost:5000/api/profile/cvs/${cv.id}/keywords`, {
+                            const response = await fetch(`/api/profile/cvs/${cv.id}/keywords`, {
                               headers: { 'Authorization': `Bearer ${token}` }
                             })
                             if (response.ok) {
@@ -3077,7 +3077,7 @@ function MyJobsSection() {
                               } else {
                                 // No keywords found, analyze the CV now
                                 console.log('🔍 No keywords found, analyzing CV...')
-                                const analyzeResponse = await fetch(`http://localhost:5000/api/profile/cvs/${cv.id}/analyze`, {
+                                const analyzeResponse = await fetch(`/api/profile/cvs/${cv.id}/analyze`, {
                                   method: 'POST',
                                   headers: { 'Authorization': `Bearer ${token}` }
                                 })

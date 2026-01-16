@@ -48,9 +48,9 @@ export default function JobDetail() {
 
   const fetchJob = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/jobs/${id}`)
+      const response = await fetch(`/api/jobs/${id}`)
       const data = await response.json()
-      
+
       if (data.success) {
         setJob(data.job)
         // Fetch similar jobs based on category
@@ -68,9 +68,9 @@ export default function JobDetail() {
 
   const fetchSimilarJobs = async (category: string, currentJobId: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/jobs')
+      const response = await fetch('/api/jobs')
       const data = await response.json()
-      
+
       if (data.success) {
         // Filter jobs by same category, exclude current job, limit to 3
         const filtered = data.jobs
@@ -102,7 +102,7 @@ export default function JobDetail() {
   const handleApply = async () => {
     if (!id) return
     if (typeof window === 'undefined') return
-    
+
     const token = localStorage.getItem('access_token')
     if (!token) {
       alert('Please log in to apply for jobs.')
@@ -190,13 +190,13 @@ export default function JobDetail() {
         <title>{job.title} at {job.company} - AhhChip</title>
       </Head>
       <Layout>
-        <div className="job-detail-page" style={{ 
-          maxWidth: '1200px', 
-          margin: '0 auto', 
-          padding: '2rem' 
+        <div className="job-detail-page" style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '2rem'
         }}>
           {/* Back Button */}
-          <button 
+          <button
             onClick={() => router.back()}
             style={{
               display: 'flex',
@@ -219,10 +219,10 @@ export default function JobDetail() {
           </button>
 
           {/* Breadcrumb */}
-          <div className="breadcrumb" style={{ 
-            marginBottom: '2rem', 
+          <div className="breadcrumb" style={{
+            marginBottom: '2rem',
             fontSize: '0.9rem',
-            color: 'var(--light-text)' 
+            color: 'var(--light-text)'
           }}>
             <Link href="/#jobs" style={{ color: 'var(--primary-orange)', textDecoration: 'none' }}>
               Jobs
@@ -232,9 +232,9 @@ export default function JobDetail() {
           </div>
 
           {/* Job Header */}
-          <div className="job-detail-header" style={{ 
-            background: 'white', 
-            padding: '2rem', 
+          <div className="job-detail-header" style={{
+            background: 'white',
+            padding: '2rem',
             borderRadius: '12px',
             marginBottom: '2rem',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
@@ -266,11 +266,11 @@ export default function JobDetail() {
                   </div>
                 </div>
 
-                <div className="job-meta-tags" style={{ 
-                  display: 'flex', 
-                  gap: '1rem', 
+                <div className="job-meta-tags" style={{
+                  display: 'flex',
+                  gap: '1rem',
                   flexWrap: 'wrap',
-                  marginTop: '1.5rem' 
+                  marginTop: '1.5rem'
                 }}>
                   <span className="meta-tag" style={{
                     padding: '0.5rem 1rem',
@@ -338,11 +338,11 @@ export default function JobDetail() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '200px', marginTop: '2rem' }}>
-                <button 
-                  className={hasApplied ? "btn-secondary" : "btn-primary"} 
+                <button
+                  className={hasApplied ? "btn-secondary" : "btn-primary"}
                   onClick={handleApply}
                   disabled={applying || hasApplied}
-                  style={{ 
+                  style={{
                     width: '100%',
                     padding: '1rem 1.5rem',
                     fontSize: '1rem',
@@ -352,11 +352,11 @@ export default function JobDetail() {
                   }}>
                   <i className={hasApplied ? "fas fa-check" : "fas fa-paper-plane"}></i> {hasApplied ? 'Applied' : applying ? 'Applying...' : 'Apply Now'}
                 </button>
-                <button 
-                  className="btn-secondary" 
+                <button
+                  className="btn-secondary"
                   onClick={handleSaveJob}
                   disabled={saving}
-                  style={{ 
+                  style={{
                     width: '100%',
                     padding: '1rem 1.5rem',
                     fontSize: '1rem',
@@ -385,7 +385,7 @@ export default function JobDetail() {
                 marginBottom: '2rem',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <h2 style={{ 
+                <h2 style={{
                   marginBottom: '1rem',
                   fontSize: '1.5rem',
                   display: 'flex',
@@ -408,7 +408,7 @@ export default function JobDetail() {
                 marginBottom: '2rem',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <h2 style={{ 
+                <h2 style={{
                   marginBottom: '1rem',
                   fontSize: '1.5rem',
                   display: 'flex',
@@ -431,7 +431,7 @@ export default function JobDetail() {
                 marginBottom: '2rem',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <h2 style={{ 
+                <h2 style={{
                   marginBottom: '1rem',
                   fontSize: '1.5rem',
                   display: 'flex',
@@ -460,7 +460,7 @@ export default function JobDetail() {
                 marginBottom: '2rem',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <h3 style={{ 
+                <h3 style={{
                   marginBottom: '1rem',
                   fontSize: '1.2rem',
                   display: 'flex',
@@ -483,7 +483,7 @@ export default function JobDetail() {
                 marginBottom: '2rem',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <h3 style={{ 
+                <h3 style={{
                   marginBottom: '1rem',
                   fontSize: '1.2rem',
                   display: 'flex',
@@ -494,7 +494,7 @@ export default function JobDetail() {
                   Job Overview
                 </h3>
                 <div className="overview-items">
-                  <div className="overview-item" style={{ 
+                  <div className="overview-item" style={{
                     padding: '0.75rem 0',
                     borderBottom: '1px solid var(--light-bg)'
                   }}>
@@ -503,7 +503,7 @@ export default function JobDetail() {
                     </div>
                     <div style={{ fontWeight: 600 }}>{job.id}</div>
                   </div>
-                  <div className="overview-item" style={{ 
+                  <div className="overview-item" style={{
                     padding: '0.75rem 0',
                     borderBottom: '1px solid var(--light-bg)'
                   }}>
@@ -512,7 +512,7 @@ export default function JobDetail() {
                     </div>
                     <div style={{ fontWeight: 600 }}>{job.location}</div>
                   </div>
-                  <div className="overview-item" style={{ 
+                  <div className="overview-item" style={{
                     padding: '0.75rem 0',
                     borderBottom: '1px solid var(--light-bg)'
                   }}>
@@ -521,7 +521,7 @@ export default function JobDetail() {
                     </div>
                     <div style={{ fontWeight: 600 }}>{job.jobType}</div>
                   </div>
-                  <div className="overview-item" style={{ 
+                  <div className="overview-item" style={{
                     padding: '0.75rem 0',
                     borderBottom: '1px solid var(--light-bg)'
                   }}>
@@ -530,7 +530,7 @@ export default function JobDetail() {
                     </div>
                     <div style={{ fontWeight: 600 }}>{job.salary}</div>
                   </div>
-                  <div className="overview-item" style={{ 
+                  <div className="overview-item" style={{
                     padding: '0.75rem 0'
                   }}>
                     <div style={{ color: 'var(--light-text)', fontSize: '0.85rem', marginBottom: '0.25rem' }}>
@@ -561,7 +561,7 @@ export default function JobDetail() {
                   marginBottom: '2rem',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                 }}>
-                  <h3 style={{ 
+                  <h3 style={{
                     marginBottom: '1rem',
                     fontSize: '1.2rem',
                     display: 'flex',
@@ -573,7 +573,7 @@ export default function JobDetail() {
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {job.contactEmail && (
-                      <div style={{ 
+                      <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.75rem',
@@ -584,7 +584,7 @@ export default function JobDetail() {
                         <i className="fas fa-envelope" style={{ color: 'var(--primary-orange)', fontSize: '1.1rem' }}></i>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: '0.75rem', color: 'var(--light-text)', marginBottom: '0.15rem' }}>Email</div>
-                          <a href={`mailto:${job.contactEmail}`} style={{ 
+                          <a href={`mailto:${job.contactEmail}`} style={{
                             color: 'var(--text-color)',
                             textDecoration: 'none',
                             wordBreak: 'break-word',
@@ -595,9 +595,9 @@ export default function JobDetail() {
                         </div>
                       </div>
                     )}
-                    
+
                     {job.contactPhone && (
-                      <div style={{ 
+                      <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.75rem',
@@ -608,7 +608,7 @@ export default function JobDetail() {
                         <i className="fas fa-phone" style={{ color: 'var(--primary-orange)', fontSize: '1.1rem' }}></i>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: '0.75rem', color: 'var(--light-text)', marginBottom: '0.15rem' }}>Phone</div>
-                          <a href={`tel:${job.contactPhone}`} style={{ 
+                          <a href={`tel:${job.contactPhone}`} style={{
                             color: 'var(--text-color)',
                             textDecoration: 'none',
                             fontSize: '0.9rem'
@@ -618,9 +618,9 @@ export default function JobDetail() {
                         </div>
                       </div>
                     )}
-                    
+
                     {job.website && (
-                      <div style={{ 
+                      <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.75rem',
@@ -631,7 +631,7 @@ export default function JobDetail() {
                         <i className="fas fa-globe" style={{ color: 'var(--primary-orange)', fontSize: '1.1rem' }}></i>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: '0.75rem', color: 'var(--light-text)', marginBottom: '0.15rem' }}>Website</div>
-                          <a href={job.website} target="_blank" rel="noopener noreferrer" style={{ 
+                          <a href={job.website} target="_blank" rel="noopener noreferrer" style={{
                             color: 'var(--primary-orange)',
                             textDecoration: 'none',
                             wordBreak: 'break-all',
@@ -653,7 +653,7 @@ export default function JobDetail() {
                 borderRadius: '12px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <h3 style={{ 
+                <h3 style={{
                   marginBottom: '1rem',
                   fontSize: '1.2rem',
                   display: 'flex',
@@ -732,7 +732,7 @@ export default function JobDetail() {
                 }}>
                   {similarJobs.map((similarJob) => (
                     <Link key={similarJob.id} href={`/jobs/${similarJob.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <div className="job-card" style={{ 
+                      <div className="job-card" style={{
                         minWidth: '280px',
                         maxWidth: '280px',
                         cursor: 'pointer'
@@ -758,17 +758,17 @@ export default function JobDetail() {
                             </div>
                           </div>
                         </div>
-                        
+
                         <h3 className="job-title">{similarJob.title}</h3>
                         <p className="job-salary">{similarJob.salary}</p>
-                        
+
                         <div className="job-info-row">
                           <span className="job-info-item">
                             <i className="fas fa-map-marker-alt"></i>
                             {similarJob.location}
                           </span>
                         </div>
-                        
+
                         <div className="job-info-row">
                           <span className="job-info-item">
                             <i className="fas fa-briefcase"></i>
@@ -779,12 +779,12 @@ export default function JobDetail() {
                             {similarJob.postedDate ? new Date(similarJob.postedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '15 Jan 2026'}
                           </span>
                         </div>
-                        
+
                         <button className="btn-view-more">View More</button>
                       </div>
                     </Link>
                   ))}
-                  
+
                   {/* Browse All Jobs Card */}
                   <Link href="/#jobs" style={{ textDecoration: 'none' }}>
                     <div style={{
@@ -803,8 +803,8 @@ export default function JobDetail() {
                       color: 'white',
                       textAlign: 'center'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                      onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                     >
                       <i className="fas fa-briefcase" style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.9 }}></i>
                       <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Browse All Jobs</h3>

@@ -13,7 +13,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setMounted(true)
-    
+
     // Check auth state - SSR safe
     if (typeof window !== 'undefined') {
       const currentUser = localStorage.getItem('currentUser')
@@ -39,7 +39,7 @@ export default function Navbar() {
       const token = localStorage.getItem('access_token')
       if (!token) return
 
-      const response = await fetch('http://localhost:5000/api/profile', {
+      const response = await fetch('/api/profile', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -72,11 +72,11 @@ export default function Navbar() {
         {/* Logo */}
         <div className="nav-logo">
           <Link href="/">
-            <Image 
-              src="/ahchip.png" 
-              alt="AhhChip Logo" 
-              width={200} 
-              height={200} 
+            <Image
+              src="/ahchip.png"
+              alt="AhhChip Logo"
+              width={200}
+              height={200}
               className="logo-img"
               priority
               quality={100}
@@ -88,8 +88,8 @@ export default function Navbar() {
         {/* Main Navigation Links */}
         <ul className="nav-menu">
           <li className="nav-item dropdown">
-            <a 
-              href={router.pathname === '/' ? '#jobs' : '/'} 
+            <a
+              href={router.pathname === '/' ? '#jobs' : '/'}
               className="nav-link"
               onClick={(e) => {
                 if (router.pathname !== '/') {
@@ -104,7 +104,7 @@ export default function Navbar() {
             </a>
             <ul className="dropdown-menu">
               <li>
-                <a 
+                <a
                   href={router.pathname === '/' ? '#jobs' : '/'}
                   onClick={(e) => {
                     if (router.pathname !== '/') {
@@ -117,7 +117,7 @@ export default function Navbar() {
                 </a>
               </li>
               <li>
-                <a 
+                <a
                   href={router.pathname === '/' ? '#my-jobs' : '/'}
                   onClick={(e) => {
                     if (router.pathname !== '/') {
@@ -130,7 +130,7 @@ export default function Navbar() {
                 </a>
               </li>
               <li>
-                <a 
+                <a
                   href={router.pathname === '/' ? '#my-jobs' : '/'}
                   onClick={(e) => {
                     if (router.pathname !== '/') {
@@ -145,8 +145,8 @@ export default function Navbar() {
             </ul>
           </li>
           <li className="nav-item">
-            <a 
-              href={router.pathname === '/' ? '#my-jobs' : '/'} 
+            <a
+              href={router.pathname === '/' ? '#my-jobs' : '/'}
               className="nav-link"
               onClick={(e) => {
                 if (router.pathname !== '/') {
@@ -184,15 +184,15 @@ export default function Navbar() {
             <Link href="/notifications" className="notification-icon" aria-label="Notifications">
               <i className="fas fa-bell"></i>
             </Link>
-            
+
             {/* User Profile Dropdown */}
             <div className="nav-user dropdown" id="userProfile">
               <div className="user-avatar">
                 {profilePhoto ? (
-                  <img 
-                    src={`http://localhost:5000${profilePhoto}`} 
-                    alt={user?.fullname || 'User'} 
-                    width={40} 
+                  <img
+                    src={`${profilePhoto}`}
+                    alt={user?.fullname || 'User'}
+                    width={40}
                     height={40}
                     style={{ borderRadius: '50%', objectFit: 'cover' }}
                   />

@@ -33,16 +33,16 @@ export default function ForgotPassword() {
     }
 
     setIsLoading(true)
-    
+
     try {
-      const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+      const response = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       })
 
       const data = await response.json()
-      
+
       if (response.ok) {
         setIsSubmitted(true)
       } else {
@@ -64,14 +64,14 @@ export default function ForgotPassword() {
         <button className="btn-back-auth" onClick={() => router.back()}>
           <i className="fas fa-arrow-left"></i>
         </button>
-        
+
         <div className="auth-container">
           <div className="auth-left auth-left-image">
-            <Image 
-              src="/signin.png" 
-              alt="Reset Password" 
-              className="auth-bg-image" 
-              width={1200} 
+            <Image
+              src="/signin.png"
+              alt="Reset Password"
+              className="auth-bg-image"
+              width={1200}
               height={1600}
               priority
             />
@@ -127,13 +127,13 @@ export default function ForgotPassword() {
               </>
             ) : (
               <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                <div style={{ 
-                  width: '80px', 
-                  height: '80px', 
-                  background: '#dcfce7', 
-                  borderRadius: '50%', 
-                  display: 'flex', 
-                  alignItems: 'center', 
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  background: '#dcfce7',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 2rem'
                 }}>
@@ -144,16 +144,16 @@ export default function ForgotPassword() {
                   We&apos;ve sent a password reset link to<br />
                   <strong style={{ color: '#f97316' }}>{email}</strong>
                 </p>
-                
+
                 <p style={{ color: '#64748b', marginBottom: '2rem', fontSize: '0.95rem' }}>
                   Didn&apos;t receive the email? Check your spam folder or{' '}
-                  <button 
+                  <button
                     onClick={() => setIsSubmitted(false)}
-                    style={{ 
-                      background: 'none', 
-                      border: 'none', 
-                      color: '#f97316', 
-                      textDecoration: 'underline', 
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#f97316',
+                      textDecoration: 'underline',
                       cursor: 'pointer',
                       fontSize: '0.95rem'
                     }}
@@ -177,10 +177,10 @@ export default function ForgotPassword() {
           <div className="modal-overlay active" onClick={() => setShowModal(false)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center' }}>
               <div style={{ padding: '2rem' }}>
-                <i 
-                  className={`fas ${modalMessage.icon}`} 
-                  style={{ 
-                    fontSize: '3rem', 
+                <i
+                  className={`fas ${modalMessage.icon}`}
+                  style={{
+                    fontSize: '3rem',
                     color: modalMessage.icon === 'fa-check-circle' ? '#16a34a' : '#ef4444',
                     marginBottom: '1rem'
                   }}
@@ -189,7 +189,7 @@ export default function ForgotPassword() {
                 <p style={{ color: '#64748b', lineHeight: '1.6', whiteSpace: 'pre-line' }}>{modalMessage.text}</p>
               </div>
               <div style={{ borderTop: '1px solid #e2e8f0', padding: '1rem' }}>
-                <button 
+                <button
                   onClick={() => setShowModal(false)}
                   className="btn-primary"
                   style={{ width: '100%' }}

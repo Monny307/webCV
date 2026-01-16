@@ -17,9 +17,9 @@ export default function OAuthCallback() {
       // Store tokens
       localStorage.setItem('access_token', access_token as string)
       localStorage.setItem('refresh_token', refresh_token as string)
-      
+
       // Fetch user details
-      fetch('http://localhost:5000/api/auth/me', {
+      fetch('/api/auth/me', {
         headers: {
           'Authorization': `Bearer ${access_token}`
         }

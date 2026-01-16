@@ -32,11 +32,11 @@ export default function Signup() {
   }
 
   const handleGoogleSignup = () => {
-    window.location.href = 'http://localhost:5000/api/auth/oauth/google'
+    window.location.href = '/api/auth/oauth/google'
   }
 
   const handleFacebookSignup = () => {
-    window.location.href = 'http://localhost:5000/api/auth/oauth/facebook'
+    window.location.href = '/api/auth/oauth/facebook'
   }
 
   const handleSubmit = async (e: FormEvent) => {
@@ -55,7 +55,7 @@ export default function Signup() {
     setLoading(true)
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -88,14 +88,14 @@ export default function Signup() {
       <Head>
         <title>Sign Up - AhhChip</title>
       </Head>
-      
+
       {loading && <LoadingOverlay message="Creating your account..." />}
-      
+
       <div className="auth-page">
         <button className="btn-back-auth" onClick={() => router.back()}>
           <i className="fas fa-arrow-left"></i>
         </button>
-        
+
         <div className="auth-container auth-container-single">
           <div className="auth-right auth-right-full">
             <div className="auth-image-top">
@@ -111,10 +111,10 @@ export default function Signup() {
               <div className="form-grid">
                 <div className="form-group-auth">
                   <label htmlFor="fullname">Full Name</label>
-                  <input 
-                    type="text" 
-                    id="fullname" 
-                    name="fullname" 
+                  <input
+                    type="text"
+                    id="fullname"
+                    name="fullname"
                     placeholder="John Doe"
                     value={formData.fullname}
                     onChange={handleChange}
@@ -124,10 +124,10 @@ export default function Signup() {
 
                 <div className="form-group-auth">
                   <label htmlFor="email">Email Address</label>
-                  <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
                     placeholder="your@email.com"
                     value={formData.email}
                     onChange={handleChange}
@@ -138,10 +138,10 @@ export default function Signup() {
                 <div className="form-group-auth">
                   <label htmlFor="password">Password</label>
                   <div className="password-input">
-                    <input 
+                    <input
                       type={showPassword ? 'text' : 'password'}
-                      id="password" 
-                      name="password" 
+                      id="password"
+                      name="password"
                       placeholder="Create a strong password"
                       value={formData.password}
                       onChange={handleChange}
@@ -157,10 +157,10 @@ export default function Signup() {
                 <div className="form-group-auth">
                   <label htmlFor="confirmPassword">Confirm Password</label>
                   <div className="password-input">
-                    <input 
+                    <input
                       type={showConfirmPassword ? 'text' : 'password'}
-                      id="confirmPassword" 
-                      name="confirmPassword" 
+                      id="confirmPassword"
+                      name="confirmPassword"
                       placeholder="Re-enter your password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
@@ -193,17 +193,17 @@ export default function Signup() {
               </div>
 
               <div className="social-auth social-auth-icons">
-                <button 
-                  type="button" 
-                  className="btn-social-icon btn-social-google" 
+                <button
+                  type="button"
+                  className="btn-social-icon btn-social-google"
                   title="Sign up with Google"
                   onClick={handleGoogleSignup}
                 >
                   <i className="fab fa-google"></i>
                 </button>
-                <button 
-                  type="button" 
-                  className="btn-social-icon btn-social-facebook" 
+                <button
+                  type="button"
+                  className="btn-social-icon btn-social-facebook"
                   title="Sign up with Facebook"
                   onClick={handleFacebookSignup}
                 >

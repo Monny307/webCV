@@ -26,18 +26,18 @@ export default function Notifications() {
     try {
       setLoading(true)
       const token = localStorage.getItem('access_token')
-      
+
       // Fetch active CV notifications
-      const activeCVRes = await fetch('http://localhost:5000/api/notifications/active-cv', {
+      const activeCVRes = await fetch('/api/notifications/active-cv', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       if (activeCVRes.ok) {
         const data = await activeCVRes.json()
         setActiveCVNotifications(data.notifications || [])
       }
-      
+
       // Fetch all CVs notifications
-      const allCVRes = await fetch('http://localhost:5000/api/notifications/all-cvs', {
+      const allCVRes = await fetch('/api/notifications/all-cvs', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       if (allCVRes.ok) {
@@ -87,9 +87,9 @@ export default function Notifications() {
           </div>
 
           {/* Filter Buttons */}
-          <div style={{ 
-            display: 'flex', 
-            gap: '0.5rem', 
+          <div style={{
+            display: 'flex',
+            gap: '0.5rem',
             marginBottom: '2rem',
             flexWrap: 'wrap'
           }}>
@@ -130,13 +130,13 @@ export default function Notifications() {
             <>
               {/* Current CV Alert Section */}
               <div style={{ marginBottom: '3rem' }}>
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
                   marginBottom: '1.5rem'
                 }}>
-                  <h2 style={{ 
+                  <h2 style={{
                     fontSize: '1.5rem',
                     color: '#1e293b',
                     display: 'flex',
@@ -158,7 +158,7 @@ export default function Notifications() {
                       </span>
                     )}
                   </h2>
-                  <button 
+                  <button
                     onClick={fetchNotifications}
                     style={{
                       padding: '0.5rem 1rem',
@@ -173,33 +173,33 @@ export default function Notifications() {
                     <i className="fas fa-sync"></i> Refresh
                   </button>
                 </div>
-                
+
                 <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>
                   Jobs matching your current active CV keywords
                 </p>
-                
+
                 {currentNotifications.length === 0 ? (
-                  <div style={{ 
-                    background: '#f0fdf4', 
+                  <div style={{
+                    background: '#f0fdf4',
                     border: '1px solid #dcfce7',
-                    borderRadius: '12px', 
-                    padding: '3rem 2rem', 
+                    borderRadius: '12px',
+                    padding: '3rem 2rem',
                     textAlign: 'center',
                     color: '#15803d'
                   }}>
                     <i className="fas fa-inbox" style={{ fontSize: '3rem', marginBottom: '1rem', display: 'block', opacity: 0.5 }}></i>
                     <h3 style={{ marginBottom: '0.5rem', fontSize: '1.25rem' }}>No notifications yet</h3>
                     <p style={{ margin: 0, opacity: 0.8 }}>
-                      {activeFilter === 'all' 
-                        ? "You'll see job notifications here when new jobs match your CV keywords" 
+                      {activeFilter === 'all'
+                        ? "You'll see job notifications here when new jobs match your CV keywords"
                         : `No ${activeFilter} notifications found`}
                     </p>
                   </div>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.25rem' }}>
                     {currentNotifications.map((notif) => (
-                      <div 
-                        key={notif.id} 
+                      <div
+                        key={notif.id}
                         style={{
                           background: notif.is_read ? '#f8fafc' : 'white',
                           border: `2px solid ${notif.is_read ? '#e2e8f0' : '#10b981'}`,
@@ -221,7 +221,7 @@ export default function Notifications() {
                             borderRadius: '50%'
                           }}></div>
                         )}
-                        
+
                         <div style={{ marginBottom: '1rem' }}>
                           <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1.15rem', color: '#1e293b', paddingRight: '1.5rem' }}>
                             {notif.job?.title}
@@ -239,7 +239,7 @@ export default function Notifications() {
                             {new Date(notif.created_at).toLocaleDateString()}
                           </p>
                         </div>
-                        
+
                         {notif.matched_keywords && notif.matched_keywords.length > 0 && (
                           <div style={{ marginBottom: '1rem' }}>
                             <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', fontWeight: 600, color: '#10b981' }}>
@@ -247,7 +247,7 @@ export default function Notifications() {
                             </p>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                               {notif.matched_keywords.map((keyword: string, idx: number) => (
-                                <span 
+                                <span
                                   key={idx}
                                   style={{
                                     background: '#d1fae5',
@@ -264,8 +264,8 @@ export default function Notifications() {
                             </div>
                           </div>
                         )}
-                        
-                        <button 
+
+                        <button
                           onClick={() => window.open(`/jobs/${notif.job?.id}`, '_blank')}
                           style={{
                             width: '100%',
@@ -293,13 +293,13 @@ export default function Notifications() {
 
               {/* All CV Notifications Section */}
               <div>
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
                   marginBottom: '1.5rem'
                 }}>
-                  <h2 style={{ 
+                  <h2 style={{
                     fontSize: '1.5rem',
                     color: '#1e293b',
                     display: 'flex',
@@ -322,33 +322,33 @@ export default function Notifications() {
                     )}
                   </h2>
                 </div>
-                
+
                 <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>
                   Jobs matching your past or inactive CV keywords
                 </p>
-                
+
                 {pastNotifications.length === 0 ? (
-                  <div style={{ 
-                    background: '#eff6ff', 
+                  <div style={{
+                    background: '#eff6ff',
                     border: '1px solid #bfdbfe',
-                    borderRadius: '12px', 
-                    padding: '3rem 2rem', 
+                    borderRadius: '12px',
+                    padding: '3rem 2rem',
                     textAlign: 'center',
                     color: '#1e40af'
                   }}>
                     <i className="fas fa-inbox" style={{ fontSize: '3rem', marginBottom: '1rem', display: 'block', opacity: 0.5 }}></i>
                     <h3 style={{ marginBottom: '0.5rem', fontSize: '1.25rem' }}>No notifications yet</h3>
                     <p style={{ margin: 0, opacity: 0.8 }}>
-                      {activeFilter === 'all' 
-                        ? "New jobs matching your past CVs will appear here" 
+                      {activeFilter === 'all'
+                        ? "New jobs matching your past CVs will appear here"
                         : `No ${activeFilter} notifications found`}
                     </p>
                   </div>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.25rem' }}>
                     {pastNotifications.map((notif) => (
-                      <div 
-                        key={notif.id} 
+                      <div
+                        key={notif.id}
                         style={{
                           background: notif.is_read ? '#f8fafc' : 'white',
                           border: `2px solid ${notif.is_read ? '#e2e8f0' : '#3b82f6'}`,
@@ -369,7 +369,7 @@ export default function Notifications() {
                             borderRadius: '50%'
                           }}></div>
                         )}
-                        
+
                         <div style={{ marginBottom: '1rem' }}>
                           <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1.15rem', color: '#1e293b', paddingRight: '1.5rem' }}>
                             {notif.job?.title}
@@ -393,7 +393,7 @@ export default function Notifications() {
                             {new Date(notif.created_at).toLocaleDateString()}
                           </p>
                         </div>
-                        
+
                         {notif.matched_keywords && notif.matched_keywords.length > 0 && (
                           <div style={{ marginBottom: '1rem' }}>
                             <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', fontWeight: 600, color: '#3b82f6' }}>
@@ -401,7 +401,7 @@ export default function Notifications() {
                             </p>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                               {notif.matched_keywords.map((keyword: string, idx: number) => (
-                                <span 
+                                <span
                                   key={idx}
                                   style={{
                                     background: '#dbeafe',
@@ -418,8 +418,8 @@ export default function Notifications() {
                             </div>
                           </div>
                         )}
-                        
-                        <button 
+
+                        <button
                           onClick={() => window.open(`/jobs/${notif.job?.id}`, '_blank')}
                           style={{
                             width: '100%',

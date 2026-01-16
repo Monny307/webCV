@@ -7,7 +7,7 @@ import Head from 'next/head'
 export default function ResetPassword() {
   const router = useRouter()
   const { token } = router.query
-  
+
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -26,7 +26,7 @@ export default function ResetPassword() {
 
     const verifyToken = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/auth/verify-reset-token', {
+        const response = await fetch('/api/auth/verify-reset-token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token })
@@ -73,7 +73,7 @@ export default function ResetPassword() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/reset-password', {
+      const response = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, new_password: password })
@@ -106,14 +106,14 @@ export default function ResetPassword() {
         <button className="btn-back-auth" onClick={() => router.push('/login')}>
           <i className="fas fa-arrow-left"></i>
         </button>
-        
+
         <div className="auth-container">
           <div className="auth-left auth-left-image">
-            <Image 
-              src="/signin.png" 
-              alt="Reset Password" 
-              className="auth-bg-image" 
-              width={1200} 
+            <Image
+              src="/signin.png"
+              alt="Reset Password"
+              className="auth-bg-image"
+              width={1200}
               height={1600}
               priority
             />
@@ -127,13 +127,13 @@ export default function ResetPassword() {
               </div>
             ) : !isValidToken ? (
               <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                <div style={{ 
-                  width: '80px', 
-                  height: '80px', 
-                  background: '#fee2e2', 
-                  borderRadius: '50%', 
-                  display: 'flex', 
-                  alignItems: 'center', 
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  background: '#fee2e2',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 2rem'
                 }}>
@@ -152,13 +152,13 @@ export default function ResetPassword() {
               </div>
             ) : isSuccess ? (
               <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                <div style={{ 
-                  width: '80px', 
-                  height: '80px', 
-                  background: '#dcfce7', 
-                  borderRadius: '50%', 
-                  display: 'flex', 
-                  alignItems: 'center', 
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  background: '#dcfce7',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 2rem'
                 }}>
