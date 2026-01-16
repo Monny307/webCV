@@ -1,48 +1,27 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from app.models import User, Profile, CV, CVKeyword, Job, JobNotification
-from functools import wraps
-import jwt
-from config import Config
-from datetime import datetime
+import re
+from uuid import UUID
 
 notifications_bp = Blueprint('notifications', __name__)
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        if not token:
-            return jsonify({'error': 'Token is missing'}), 401
-        
-        try:
-            if token.startswith('Bearer '):
-                token = token[7:]
-            data = jwt.decode(token, Config.SECRET_KEY, algorithms=['HS256'])
-            current_user = User.query.get(data['user_id'])
-            if not current_user:
-                return jsonify({'error': 'User not found'}), 401
-        except Exception as e:
-            return jsonify({'error': 'Token is invalid', 'details': str(e)}), 401
-        
-        return f(current_user, *args, **kwargs)
-    
-    return decorated
-
 
 @notifications_bp.route('/api/notifications/active-cv', methods=['GET'])
-@token_required
-def get_active_cv_notifications(current_user):
+@jwt_required()
+def get_active_cv_notifications():
     """Get notifications for jobs matching active CV keywords"""
     try:
+        current_user_id = get_jwt_identity()
         # Get user's profile
-        profile = Profile.query.filter_by(user_id=current_user.id).first()
+        profile = Profile.query.filter_by(user_id=current_user_id).first()
         if not profile:
             return jsonify({'notifications': []})
         
         # Get notifications for active CV
         notifications = JobNotification.query.filter_by(
-            user_id=current_user.id,
+            user_id=current_user_id,
             notification_type='active_cv'
         ).order_by(JobNotification.created_at.desc()).limit(50).all()
         
@@ -62,18 +41,19 @@ def get_active_cv_notifications(current_user):
 
 
 @notifications_bp.route('/api/notifications/all-cvs', methods=['GET'])
-@token_required
-def get_all_cvs_notifications(current_user):
+@jwt_required()
+def get_all_cvs_notifications():
     """Get notifications for jobs matching past/inactive CV keywords"""
     try:
+        current_user_id = get_jwt_identity()
         # Get user's profile
-        profile = Profile.query.filter_by(user_id=current_user.id).first()
+        profile = Profile.query.filter_by(user_id=current_user_id).first()
         if not profile:
             return jsonify({'notifications': []})
         
         # Get notifications for past CVs
         notifications = JobNotification.query.filter_by(
-            user_id=current_user.id,
+            user_id=current_user_id,
             notification_type='past_cv'
         ).order_by(JobNotification.created_at.desc()).limit(50).all()
         
@@ -96,16 +76,17 @@ def get_all_cvs_notifications(current_user):
 
 
 @notifications_bp.route('/api/notifications/<notification_id>/read', methods=['PUT'])
-@token_required
-def mark_notification_read(current_user, notification_id):
+@jwt_required()
+def mark_notification_read(notification_id):
     """Mark a notification as read"""
     try:
+        current_user_id = get_jwt_identity()
         notification = JobNotification.query.get(notification_id)
         if not notification:
             return jsonify({'error': 'Notification not found'}), 404
         
         # Verify ownership
-        if str(notification.user_id) != str(current_user.id):
+        if str(notification.user_id) != str(current_user_id):
             return jsonify({'error': 'Unauthorized'}), 403
         
         notification.is_read = True
@@ -119,18 +100,19 @@ def mark_notification_read(current_user, notification_id):
 
 
 @notifications_bp.route('/api/notifications/unread-count', methods=['GET'])
-@token_required
-def get_unread_count(current_user):
+@jwt_required()
+def get_unread_count():
     """Get count of unread notifications"""
     try:
+        current_user_id = get_jwt_identity()
         active_cv_count = JobNotification.query.filter_by(
-            user_id=current_user.id,
+            user_id=current_user_id,
             notification_type='active_cv',
             is_read=False
         ).count()
         
         past_cvs_count = JobNotification.query.filter_by(
-            user_id=current_user.id,
+            user_id=current_user_id,
             notification_type='past_cv',
             is_read=False
         ).count()
@@ -150,9 +132,6 @@ def check_and_create_notifications(job_id):
     Check if a new job matches any user's CV keywords and create notifications.
     This function should be called after a job is added or scraped.
     """
-    import re
-    from uuid import UUID
-    
     def is_khmer(text):
         # Khmer Unicode range: \u1780-\u17FF
         return any('\u1780' <= char <= '\u17FF' for char in text)
