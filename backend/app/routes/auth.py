@@ -199,62 +199,69 @@ def forgot_password():
         user.reset_token_expiry = datetime.utcnow() + timedelta(hours=1)  # Token valid for 1 hour
         db.session.commit()
         
-        # Send email
-        reset_url = f"http://localhost:3000/reset-password?token={reset_token}"
+        # Send email in background to prevent 504 timeout
+        from flask import current_app
+        from threading import Thread
         
-        try:
-            msg = Message(
-                subject='Password Reset Request - AhhChip',
-                recipients=[email],
-                sender='noreply@ahhchip.com'
-            )
-            
-            msg.html = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-                    .header {{ background-color: #f97316; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }}
-                    .content {{ background-color: #f9f9f9; padding: 30px; border-radius: 0 0 5px 5px; }}
-                    .button {{ display: inline-block; padding: 12px 30px; background-color: #f97316; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }}
-                    .footer {{ text-align: center; margin-top: 20px; color: #666; font-size: 12px; }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>Password Reset Request</h1>
-                    </div>
-                    <div class="content">
-                        <p>Hello,</p>
-                        <p>We received a request to reset your password for your AhhChip account.</p>
-                        <p>Click the button below to reset your password:</p>
-                        <p style="text-align: center;">
-                            <a href="{reset_url}" class="button">Reset Password</a>
-                        </p>
-                        <p>Or copy and paste this link into your browser:</p>
-                        <p style="word-break: break-all; color: #f97316;">{reset_url}</p>
-                        <p><strong>This link will expire in 1 hour.</strong></p>
-                        <p>If you didn't request a password reset, please ignore this email or contact support if you have concerns.</p>
-                        <p>Best regards,<br>The AhhChip Team</p>
-                    </div>
-                    <div class="footer">
-                        <p>This is an automated email. Please do not reply to this message.</p>
-                    </div>
+        frontend_url = current_app.config.get('FRONTEND_URL', 'http://localhost:3000')
+        reset_url = f"{frontend_url}/reset-password?token={reset_token}"
+        
+        def send_async_email(app, msg):
+            with app.app_context():
+                try:
+                    mail.send(msg)
+                    print(f"✅ Password reset email sent to: {email}")
+                except Exception as e:
+                    print(f"❌ Failed to send email to {email}: {str(e)}")
+
+        msg = Message(
+            subject='Password Reset Request - AhhChip',
+            recipients=[email],
+            sender=current_app.config.get('MAIL_DEFAULT_SENDER', 'noreply@ahhchip.com')
+        )
+        
+        msg.html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background-color: #f97316; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }}
+                .content {{ background-color: #f9f9f9; padding: 30px; border-radius: 0 0 5px 5px; }}
+                .button {{ display: inline-block; padding: 12px 30px; background-color: #f97316; color: white !important; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }}
+                .footer {{ text-align: center; margin-top: 20px; color: #666; font-size: 12px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Password Reset Request</h1>
                 </div>
-            </body>
-            </html>
-            """
-            
-            mail.send(msg)
-            print(f"✅ Password reset email sent to: {email}")
-            
-        except Exception as email_error:
-            print(f"❌ Failed to send email: {str(email_error)}")
-            # Still return success to prevent email enumeration
-            pass
+                <div class="content">
+                    <p>Hello,</p>
+                    <p>We received a request to reset your password for your AhhChip account.</p>
+                    <p>Click the button below to reset your password:</p>
+                    <p style="text-align: center;">
+                        <a href="{reset_url}" class="button">Reset Password</a>
+                    </p>
+                    <p>Or copy and paste this link into your browser:</p>
+                    <p style="word-break: break-all; color: #f97316;">{reset_url}</p>
+                    <p><strong>This link will expire in 1 hour.</strong></p>
+                    <p>If you didn't request a password reset, please ignore this email.</p>
+                    <p>Best regards,<br>The AhhChip Team</p>
+                </div>
+                <div class="footer">
+                    <p>This is an automated email. Please do not reply to this message.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Start the background thread
+        app = current_app._get_current_object()
+        Thread(target=send_async_email, args=(app, msg)).start()
         
         return jsonify({
             'success': True,

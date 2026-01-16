@@ -45,6 +45,9 @@ class Config:
     
     # Poppler path for pdf2image
     POPPLER_PATH = os.getenv('POPPLER_PATH', r'C:\poppler\poppler-24.02.0\Library\bin')
+    
+    # Frontend URL for links in emails
+    FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
 
 
 class DevelopmentConfig(Config):
