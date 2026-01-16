@@ -27,6 +27,14 @@ def create_app(config_name=None):
     chosen_config = config.get(config_name, config['development'])
     app.config.from_object(chosen_config)
 
+    # Validate production secrets
+    if config_name == 'production':
+        if not app.config.get('SECRET_KEY') or app.config.get('SECRET_KEY') == 'dev-secret-key-change-in-production':
+             # fallback for safety but warn
+             app.logger.warning("SECRET_KEY is not set or is insecure in production!")
+        if not app.config.get('JWT_SECRET_KEY') or app.config.get('JWT_SECRET_KEY') == 'jwt-secret-key-change-in-production':
+             app.logger.warning("JWT_SECRET_KEY is not set or is insecure in production!")
+
     # Ensure SQLALCHEMY_DATABASE_URI is set
     if not app.config.get('SQLALCHEMY_DATABASE_URI'):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
