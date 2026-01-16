@@ -53,14 +53,14 @@ export default function AdminDashboard() {
     const user = localStorage.getItem('user')
     console.log('Token exists:', !!token)
     console.log('User:', user ? JSON.parse(user) : null)
-    
+
     if (!token) {
       console.error('No authentication token found!')
       alert('You are not logged in. Please login first.')
       window.location.href = '/login'
       return
     }
-    
+
     fetchStats()
     fetchJobs()
   }, [])
@@ -71,7 +71,7 @@ export default function AdminDashboard() {
       console.log('Fetching admin stats...')
       const response = await api.get('/api/admin/stats')
       console.log('Stats response:', response)
-      
+
       if (response.success) {
         console.log('Setting stats:', response.stats)
         setStats(response.stats)
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
           <h1 style={{ margin: '0 0 0.5rem 0', fontSize: '1.75rem', fontWeight: 700, color: '#1e293b' }}>
             <i className="fas fa-chart-line"></i> Dashboard Overview
           </h1>
-          <p style={{ margin: 0, color: '#64748b' }}>Monitor your platform's key metrics and statistics</p>
+          <p style={{ margin: 0, color: '#64748b' }}>Monitor your platform&apos;s key metrics and statistics</p>
         </div>
 
         {/* Stats Cards */}

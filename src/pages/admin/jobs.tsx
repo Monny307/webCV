@@ -60,10 +60,10 @@ export default function AdminJobs() {
       const params = new URLSearchParams()
       if (searchQuery) params.append('search', searchQuery)
       if (statusFilter) params.append('status', statusFilter)
-      
+
       const response = await api.get(`/api/admin/jobs?${params.toString()}`)
-      if (response.data.success) {
-        setJobs(response.data.jobs)
+      if (response.success) {
+        setJobs(response.jobs)
       }
     } catch (error: any) {
       console.error('Error fetching jobs:', error)
@@ -75,7 +75,7 @@ export default function AdminJobs() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       let logoUrl = formData.logo
 
@@ -83,24 +83,20 @@ export default function AdminJobs() {
       if (logoFile) {
         const uploadFormData = new FormData()
         uploadFormData.append('file', logoFile)
-        
-        const uploadResponse = await api.post('/api/admin/upload-logo', uploadFormData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
-        
-        if (uploadResponse.data.success) {
-          logoUrl = uploadResponse.data.file_path
+
+        const uploadResponse = await api.post('/api/admin/upload-logo', uploadFormData)
+
+        if (uploadResponse.success) {
+          logoUrl = uploadResponse.file_path
         }
       }
 
       const jobData = { ...formData, logo: logoUrl }
-      
+
       if (editingJob) {
         // Update existing job
         const response = await api.put(`/api/admin/jobs/${editingJob.id}`, jobData)
-        if (response.data.success) {
+        if (response.success) {
           alert('Job updated successfully!')
           fetchJobs()
           closeModal()
@@ -108,7 +104,7 @@ export default function AdminJobs() {
       } else {
         // Create new job
         const response = await api.post('/api/admin/jobs', jobData)
-        if (response.data.success) {
+        if (response.success) {
           alert('Job created successfully!')
           fetchJobs()
           closeModal()
@@ -122,10 +118,10 @@ export default function AdminJobs() {
 
   const handleDelete = async (jobId: string) => {
     if (!confirm('Are you sure you want to delete this job?')) return
-    
+
     try {
       const response = await api.delete(`/api/admin/jobs/${jobId}`)
-      if (response.data.success) {
+      if (response.success) {
         alert('Job deleted successfully!')
         fetchJobs()
       }
@@ -138,7 +134,7 @@ export default function AdminJobs() {
   const toggleStatus = async (jobId: string) => {
     try {
       const response = await api.post(`/api/admin/jobs/${jobId}/toggle-status`)
-      if (response.data.success) {
+      if (response.success) {
         fetchJobs()
       }
     } catch (error: any) {
@@ -200,19 +196,20 @@ export default function AdminJobs() {
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if// Validate file type
+    if (file) {
+      // Validate file type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
       if (!allowedTypes.includes(file.type)) {
         alert('Please upload a valid image file (JPG, PNG, GIF, WEBP, SVG)')
         return
       }
-      
+
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
         alert('File size must be less than 5MB')
         return
       }
-      
+
       setLogoFile(file)
       // Create preview URL
       const reader = new FileReader()
@@ -233,9 +230,9 @@ export default function AdminJobs() {
     setFormData({ ...formData, logo: '' })
     if (logoInputRef.current) {
       logoInputRef.current.value = ''
-      reader.readAsDataURL(file)
     }
   }
+
 
   return (
     <>
@@ -439,7 +436,7 @@ export default function AdminJobs() {
                   {editingJob ? 'Edit Job' : 'Add New Job'}
                 </h3>
               </div>
-              
+
               <form onSubmit={handleSubmit} style={{ padding: '1.5rem' }}>
                 <div style={{ display: 'grid', gap: '1rem' }}>
                   <div>
@@ -650,12 +647,12 @@ export default function AdminJobs() {
                     />
                     {formData.logo && (
                       <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <img 
-                          src={formData.logo} 
-                          alt="Company Logo Preview" 
-                          style={{ 
-                            width: '50px', 
-                            height: '50px', 
+                        <img
+                          src={formData.logo}
+                          alt="Company Logo Preview"
+                          style={{
+                            width: '50px',
+                            height: '50px',
                             objectFit: 'contain',
                             border: '1px solid #e2e8f0',
                             borderRadius: '6px',
@@ -673,16 +670,16 @@ export default function AdminJobs() {
                   </div>
 
                   {/* Contact Information Section */}
-                  <div style={{ 
-                    padding: '1.5rem', 
-                    background: '#f8fafc', 
+                  <div style={{
+                    padding: '1.5rem',
+                    background: '#f8fafc',
                     borderRadius: '12px',
                     border: '1px solid #e2e8f0'
                   }}>
                     <h3 style={{ marginBottom: '1rem', fontWeight: 600, color: '#475569', fontSize: '1.1rem' }}>
                       <i className="fas fa-address-card"></i> Contact Information
                     </h3>
-                    
+
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                       <div>
                         <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#64748b', fontSize: '0.9rem' }}>
@@ -744,35 +741,35 @@ export default function AdminJobs() {
                   </div>
 
                   {/* Company Logo Section - Similar to Profile Photo */}
-                  <div style={{ 
-                    padding: '1.5rem', 
-                    background: '#f8fafc', 
+                  <div style={{
+                    padding: '1.5rem',
+                    background: '#f8fafc',
                     borderRadius: '12px',
                     border: '2px dashed #e2e8f0'
                   }}>
                     <label style={{ display: 'block', marginBottom: '1rem', fontWeight: 600, color: '#475569', fontSize: '1.1rem' }}>
                       <i className="fas fa-image"></i> Company Logo
                     </label>
-                    
+
                     <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
                       {/* Logo Preview with Edit Button Overlay */}
                       <div style={{ position: 'relative' }}>
                         {logoPreview || formData.logo ? (
                           <>
-                            <img 
-                              src={logoPreview || formData.logo} 
-                              alt="Company Logo" 
-                              style={{ 
-                                width: '180px', 
-                                height: '180px', 
-                                border: '3px solid #e2e8f0', 
+                            <img
+                              src={logoPreview || formData.logo}
+                              alt="Company Logo"
+                              style={{
+                                width: '180px',
+                                height: '180px',
+                                border: '3px solid #e2e8f0',
                                 borderRadius: '12px',
                                 objectFit: 'contain',
                                 background: 'white',
                                 padding: '0.5rem'
-                              }} 
+                              }}
                             />
-                            <button 
+                            <button
                               type="button"
                               onClick={handleLogoClick}
                               style={{
@@ -804,7 +801,7 @@ export default function AdminJobs() {
                             >
                               <i className="fas fa-camera"></i>
                             </button>
-                            <button 
+                            <button
                               type="button"
                               onClick={handleRemoveLogo}
                               style={{
@@ -839,7 +836,7 @@ export default function AdminJobs() {
                             </button>
                           </>
                         ) : (
-                          <div 
+                          <div
                             onClick={handleLogoClick}
                             style={{
                               width: '180px',
@@ -874,8 +871,8 @@ export default function AdminJobs() {
                             </div>
                           </div>
                         )}
-                        
-                        <input 
+
+                        <input
                           ref={logoInputRef}
                           type="file"
                           accept="image/*"
@@ -889,10 +886,10 @@ export default function AdminJobs() {
                         <h4 style={{ margin: '0 0 0.75rem 0', color: '#475569', fontSize: '1rem' }}>
                           Upload Company Logo
                         </h4>
-                        <ul style={{ 
-                          margin: 0, 
-                          padding: '0 0 0 1.25rem', 
-                          color: '#64748b', 
+                        <ul style={{
+                          margin: 0,
+                          padding: '0 0 0 1.25rem',
+                          color: '#64748b',
                           fontSize: '0.9rem',
                           lineHeight: '1.8'
                         }}>
@@ -901,7 +898,7 @@ export default function AdminJobs() {
                           <li>Maximum size: 5MB</li>
                           <li>Square or transparent background works best</li>
                         </ul>
-                        
+
                         {!logoPreview && !formData.logo && (
                           <button
                             type="button"
@@ -928,10 +925,10 @@ export default function AdminJobs() {
                     </div>
 
                     {/* Alternative: Logo URL Input */}
-                    <div style={{ 
-                      marginTop: '1.5rem', 
-                      paddingTop: '1.5rem', 
-                      borderTop: '1px solid #e2e8f0' 
+                    <div style={{
+                      marginTop: '1.5rem',
+                      paddingTop: '1.5rem',
+                      borderTop: '1px solid #e2e8f0'
                     }}>
                       <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#475569', fontSize: '0.95rem' }}>
                         <i className="fas fa-link"></i> Or use Logo URL

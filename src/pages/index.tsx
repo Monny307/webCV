@@ -15,7 +15,7 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true)
-    
+
     // Check authentication status - SSR safe
     if (typeof window !== 'undefined') {
       const currentUser = localStorage.getItem('currentUser')
@@ -50,7 +50,7 @@ export default function Home() {
 
     // Listen for hash changes
     window.addEventListener('hashchange', handleHashChange, false)
-    
+
     // Also listen for clicks on hash links
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement
@@ -59,9 +59,9 @@ export default function Home() {
         setTimeout(handleHashChange, 50)
       }
     }
-    
+
     document.addEventListener('click', handleClick, false)
-    
+
     return () => {
       window.removeEventListener('hashchange', handleHashChange, false)
       document.removeEventListener('click', handleClick, false)
@@ -177,7 +177,7 @@ function CVSection() {
 
   useEffect(() => {
     setMounted(true)
-    
+
     if (typeof window !== 'undefined') {
       const currentUser = localStorage.getItem('currentUser')
       setIsLoggedIn(!!currentUser)
@@ -212,7 +212,7 @@ function CVSection() {
     const fetchCVs = async () => {
       const token = localStorage.getItem('access_token')
       if (!token) return
-      
+
       setLoadingCVs(true)
       try {
         const response = await fetch('http://localhost:5000/api/profile/cvs', {
@@ -228,7 +228,7 @@ function CVSection() {
         setLoadingCVs(false)
       }
     }
-    
+
     if (isLoggedIn) {
       fetchCVs()
     }
@@ -463,16 +463,16 @@ function CVSection() {
 
         <div className="profile-fields">
           <h3>Profile Information</h3>
-          
+
           <div className="profile-header-section">
             <div className="profile-image-container">
               <img src={profilePhoto} alt="Profile" className="profile-image" />
               <button className="btn-edit-image" onClick={handlePhotoClick}>
                 <i className="fas fa-camera"></i>
               </button>
-              <input 
+              <input
                 ref={fileInputRef}
-                type="file" 
+                type="file"
                 accept="image/*"
                 onChange={handlePhotoChange}
                 style={{ display: 'none' }}
@@ -654,40 +654,40 @@ function CVSection() {
               <h2>Upload New CV</h2>
               <button className="close-btn" onClick={() => setShowUploadModal(false)}>&times;</button>
             </div>
-            
+
             <div style={{ padding: '1rem 0' }}>
-              <div style={{ 
-                border: '2px dashed #d1d5db', 
-                borderRadius: '12px', 
-                padding: '3rem 2rem', 
+              <div style={{
+                border: '2px dashed #d1d5db',
+                borderRadius: '12px',
+                padding: '3rem 2rem',
                 textAlign: 'center',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease'
               }}
-              onClick={() => cvUploadRef.current?.click()}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'var(--primary-orange)'
-                e.currentTarget.style.background = 'rgba(255, 140, 66, 0.05)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#d1d5db'
-                e.currentTarget.style.background = 'transparent'
-              }}
+                onClick={() => cvUploadRef.current?.click()}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--primary-orange)'
+                  e.currentTarget.style.background = 'rgba(255, 140, 66, 0.05)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#d1d5db'
+                  e.currentTarget.style.background = 'transparent'
+                }}
               >
                 <i className="fas fa-cloud-upload-alt" style={{ fontSize: '3rem', color: 'var(--primary-orange)', marginBottom: '1rem' }}></i>
                 <p style={{ marginBottom: '0.5rem', fontWeight: 600 }}>Click to upload or drag and drop</p>
                 <p style={{ fontSize: '0.9rem', color: 'var(--light-text)' }}>Supported formats: PDF, DOC, DOCX</p>
                 <p style={{ fontSize: '0.85rem', color: 'var(--light-text)', marginTop: '0.5rem' }}>Maximum file size: 10MB</p>
               </div>
-              <input 
+              <input
                 ref={cvUploadRef}
-                type="file" 
+                type="file"
                 accept=".pdf,.doc,.docx"
                 onChange={handleUploadCV}
                 style={{ display: 'none' }}
               />
             </div>
-            
+
             <div className="modal-actions">
               <button className="btn-secondary" onClick={() => setShowUploadModal(false)}>
                 Cancel
@@ -705,7 +705,7 @@ function CVSection() {
               <h2>View CV: {selectedCV}</h2>
               <button className="close-btn" onClick={() => setShowCVViewer(false)}>&times;</button>
             </div>
-            
+
             <div style={{ padding: '2rem', background: '#f9fafb', borderRadius: '8px', minHeight: '500px', maxHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'auto' }}>
               <div style={{ textAlign: 'center' }}>
                 <i className="fas fa-file-pdf" style={{ fontSize: '4rem', color: 'var(--primary-orange)', marginBottom: '1rem' }}></i>
@@ -713,7 +713,7 @@ function CVSection() {
                 <p style={{ color: 'var(--light-text)', fontSize: '0.9rem' }}>Full PDF viewer would be integrated here</p>
               </div>
             </div>
-            
+
             <div className="modal-actions">
               <button className="btn-secondary" onClick={() => setShowCVViewer(false)}>
                 <i className="fas fa-times"></i> Close
@@ -734,11 +734,11 @@ function CVSection() {
               <h2>Notification</h2>
               <button className="close-btn" onClick={() => setShowMessageModal(false)}>&times;</button>
             </div>
-            
+
             <div style={{ padding: '1.5rem 0' }}>
               <p style={{ fontSize: '1rem', lineHeight: '1.6', color: 'var(--dark-text)' }}>{messageContent}</p>
             </div>
-            
+
             <div className="modal-actions">
               <button className="btn-primary" onClick={() => setShowMessageModal(false)} style={{ width: '100%', justifyContent: 'center' }}>
                 OK
@@ -781,7 +781,7 @@ function JobsSection({
     // Apply search term filter
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase()
-      result = result.filter(job => 
+      result = result.filter(job =>
         job.title.toLowerCase().includes(search) ||
         job.company.toLowerCase().includes(search) ||
         job.description.toLowerCase().includes(search) ||
@@ -794,7 +794,7 @@ function JobsSection({
     }
 
     if (filters.locations.length > 0) {
-      result = result.filter(job => 
+      result = result.filter(job =>
         filters.locations.some(loc => job.location.toLowerCase().includes(loc.toLowerCase()))
       )
     }
@@ -807,9 +807,9 @@ function JobsSection({
       result = result.filter(job => {
         const salaryMatch = job.salary.match(/\$?\s*(\d+(?:,\d{3})*(?:\.\d{2})?)/g)
         if (!salaryMatch || salaryMatch.length === 0) return false
-        
+
         const jobSalaryMin = parseInt(salaryMatch[0].replace(/[$,]/g, ''))
-        const jobSalaryMax = salaryMatch.length > 1 
+        const jobSalaryMax = salaryMatch.length > 1
           ? parseInt(salaryMatch[1].replace(/[$,]/g, ''))
           : jobSalaryMin
 
@@ -859,12 +859,12 @@ function JobsSection({
         <div className="hero-overlay"></div>
         <div className="hero-banner-content">
           <h1>Find Your Perfect Job</h1>
-          
+
           <div className="hero-search-box">
             <div className="search-input-wrapper">
               <i className="fas fa-search"></i>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Job title, keywords, or company..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -875,7 +875,7 @@ function JobsSection({
                 }}
               />
             </div>
-            <button 
+            <button
               className="btn-hero-search"
               onClick={() => {
                 // Search is already applied via useEffect, this is just for UX
@@ -941,9 +941,9 @@ function JobsSection({
         </div>
       </div>
 
-      <h2 style={{ 
-        textAlign: 'center', 
-        marginTop: '3rem', 
+      <h2 style={{
+        textAlign: 'center',
+        marginTop: '3rem',
         marginBottom: '2rem',
         fontSize: '2rem',
         fontWeight: 700,
@@ -963,12 +963,12 @@ function JobsSection({
             <i className="fas fa-search" style={{ fontSize: '3rem', color: '#64748b', marginBottom: '1rem', display: 'block' }}></i>
             <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: '#1e293b' }}>No Jobs Found</h3>
             <p style={{ color: '#64748b', marginBottom: '2rem' }}>
-              {hasActiveFilters 
-                ? 'Try adjusting your filters to see more results.' 
+              {hasActiveFilters
+                ? 'Try adjusting your filters to see more results.'
                 : 'No jobs available at the moment. Check back later!'}
             </p>
             {hasActiveFilters && (
-              <button 
+              <button
                 onClick={resetFilters}
                 style={{
                   padding: '0.75rem 1.5rem',
@@ -1015,17 +1015,17 @@ function JobsSection({
                       </div>
                     </div>
                   </div>
-                  
+
                   <h3 className="job-title">{job.title}</h3>
                   <p className="job-salary">{job.salary}</p>
-                  
+
                   <div className="job-info-row">
                     <span className="job-info-item">
                       <i className="fas fa-map-marker-alt"></i>
                       {job.location}
                     </span>
                   </div>
-                  
+
                   <div className="job-info-row">
                     <span className="job-info-item">
                       <i className="fas fa-briefcase"></i>
@@ -1037,7 +1037,7 @@ function JobsSection({
                     </span>
                   </div>
                 </div>
-                
+
                 <button className="btn-view-more">View More</button>
               </div>
             </Link>
@@ -1070,7 +1070,7 @@ function JobsSection({
               <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: '#1f2937' }}>
                 Filter Jobs
               </h2>
-              <button 
+              <button
                 onClick={() => setShowFilterModal(false)}
                 style={{
                   background: 'none',
@@ -1089,7 +1089,7 @@ function JobsSection({
                 <i className="fas fa-times"></i>
               </button>
             </div>
-            
+
             {/* Scrollable Content */}
             <div style={{
               flex: 1,
@@ -1099,9 +1099,9 @@ function JobsSection({
               {activeFilterType === 'category' ? (
                 /* Career Category Section Only */
                 <div id="filter-category" style={{ marginBottom: '2rem' }}>
-                  <h3 style={{ 
-                    fontSize: '1rem', 
-                    fontWeight: 700, 
+                  <h3 style={{
+                    fontSize: '1rem',
+                    fontWeight: 700,
                     color: '#1f2937',
                     marginBottom: '1rem',
                     display: 'flex',
@@ -1121,18 +1121,18 @@ function JobsSection({
                       'Hospitality & Tourism',
                       'Construction'
                     ].map(cat => (
-                      <label key={cat} style={{ 
-                        display: 'flex', 
+                      <label key={cat} style={{
+                        display: 'flex',
                         alignItems: 'center',
                         cursor: 'pointer',
                         fontSize: '0.95rem',
                         color: '#4b5563'
                       }}>
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           checked={filters.categories.includes(cat)}
                           onChange={() => toggleFilter('categories', cat)}
-                          style={{ marginRight: '0.75rem', width: '16px', height: '16px' }} 
+                          style={{ marginRight: '0.75rem', width: '16px', height: '16px' }}
                         />
                         <span>{cat}</span>
                       </label>
@@ -1142,9 +1142,9 @@ function JobsSection({
               ) : activeFilterType === 'location' ? (
                 /* Location Section Only */
                 <div id="filter-location" style={{ marginBottom: '2rem' }}>
-                  <h3 style={{ 
-                    fontSize: '1rem', 
-                    fontWeight: 700, 
+                  <h3 style={{
+                    fontSize: '1rem',
+                    fontWeight: 700,
                     color: '#1f2937',
                     marginBottom: '1rem',
                     display: 'flex',
@@ -1163,8 +1163,8 @@ function JobsSection({
                       'Kampot',
                       'Remote'
                     ].map(loc => (
-                      <label key={loc} style={{ 
-                        display: 'flex', 
+                      <label key={loc} style={{
+                        display: 'flex',
                         alignItems: 'center',
                         cursor: 'pointer',
                         fontSize: '0.95rem',
@@ -1179,9 +1179,9 @@ function JobsSection({
               ) : activeFilterType === 'salary' ? (
                 /* Salary Range Section Only */
                 <div id="filter-salary" style={{ marginBottom: '2rem' }}>
-                  <h3 style={{ 
-                    fontSize: '1rem', 
-                    fontWeight: 700, 
+                  <h3 style={{
+                    fontSize: '1rem',
+                    fontWeight: 700,
                     color: '#1f2937',
                     marginBottom: '1rem',
                     display: 'flex',
@@ -1198,18 +1198,18 @@ function JobsSection({
                       '$2000 - $3000',
                       '$3000+'
                     ].map(range => (
-                      <label key={range} style={{ 
-                        display: 'flex', 
+                      <label key={range} style={{
+                        display: 'flex',
                         alignItems: 'center',
                         cursor: 'pointer',
                         fontSize: '0.95rem',
                         color: '#4b5563'
                       }}>
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           checked={filters.salaryRanges.includes(range)}
                           onChange={() => toggleFilter('salaryRanges', range)}
-                          style={{ marginRight: '0.75rem', width: '16px', height: '16px' }} 
+                          style={{ marginRight: '0.75rem', width: '16px', height: '16px' }}
                         />
                         <span>{range}</span>
                       </label>
@@ -1219,9 +1219,9 @@ function JobsSection({
               ) : activeFilterType === 'jobType' ? (
                 /* Job Type Section Only */
                 <div id="filter-jobType" style={{ marginBottom: '2rem' }}>
-                  <h3 style={{ 
-                    fontSize: '1rem', 
-                    fontWeight: 700, 
+                  <h3 style={{
+                    fontSize: '1rem',
+                    fontWeight: 700,
                     color: '#1f2937',
                     marginBottom: '1rem',
                     display: 'flex',
@@ -1238,18 +1238,18 @@ function JobsSection({
                       'Internship',
                       'Freelance'
                     ].map(type => (
-                      <label key={type} style={{ 
-                        display: 'flex', 
+                      <label key={type} style={{
+                        display: 'flex',
                         alignItems: 'center',
                         cursor: 'pointer',
                         fontSize: '0.95rem',
                         color: '#4b5563'
                       }}>
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           checked={filters.jobTypes.includes(type)}
                           onChange={() => toggleFilter('jobTypes', type)}
-                          style={{ marginRight: '0.75rem', width: '16px', height: '16px' }} 
+                          style={{ marginRight: '0.75rem', width: '16px', height: '16px' }}
                         />
                         <span>{type}</span>
                       </label>
@@ -1258,174 +1258,174 @@ function JobsSection({
                 </div>
               ) : (
                 <>
-              {/* Career Category Section */}
-              <div id="filter-category" style={{ marginBottom: '2rem' }}>
-                <h3 style={{ 
-                  fontSize: '1rem', 
-                  fontWeight: 700, 
-                  color: '#1f2937',
-                  marginBottom: '1rem',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  <input type="checkbox" style={{ marginRight: '0.75rem', width: '18px', height: '18px' }} />
-                  Career Category
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingLeft: '2rem' }}>
-                  {[
-                    'Technology & IT',
-                    'Marketing & Sales',
-                    'Finance & Accounting',
-                    'Healthcare',
-                    'Education',
-                    'Engineering',
-                    'Hospitality & Tourism',
-                    'Construction'
-                  ].map(cat => (
-                    <label key={cat} style={{ 
-                      display: 'flex', 
-                      alignItems: 'center',
-                      cursor: 'pointer',
-                      fontSize: '0.95rem',
-                      color: '#4b5563'
+                  {/* Career Category Section */}
+                  <div id="filter-category" style={{ marginBottom: '2rem' }}>
+                    <h3 style={{
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      color: '#1f2937',
+                      marginBottom: '1rem',
+                      display: 'flex',
+                      alignItems: 'center'
                     }}>
-                      <input 
-                        type="checkbox" 
-                        checked={filters.categories.includes(cat)}
-                        onChange={() => toggleFilter('categories', cat)}
-                        style={{ marginRight: '0.75rem', width: '16px', height: '16px' }} 
-                      />
-                      <span>{cat}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+                      <input type="checkbox" style={{ marginRight: '0.75rem', width: '18px', height: '18px' }} />
+                      Career Category
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingLeft: '2rem' }}>
+                      {[
+                        'Technology & IT',
+                        'Marketing & Sales',
+                        'Finance & Accounting',
+                        'Healthcare',
+                        'Education',
+                        'Engineering',
+                        'Hospitality & Tourism',
+                        'Construction'
+                      ].map(cat => (
+                        <label key={cat} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          cursor: 'pointer',
+                          fontSize: '0.95rem',
+                          color: '#4b5563'
+                        }}>
+                          <input
+                            type="checkbox"
+                            checked={filters.categories.includes(cat)}
+                            onChange={() => toggleFilter('categories', cat)}
+                            style={{ marginRight: '0.75rem', width: '16px', height: '16px' }}
+                          />
+                          <span>{cat}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Location Section */}
-              <div id="filter-location" style={{ marginBottom: '2rem' }}>
-                <h3 style={{ 
-                  fontSize: '1rem', 
-                  fontWeight: 700, 
-                  color: '#1f2937',
-                  marginBottom: '1rem',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  <input type="checkbox" style={{ marginRight: '0.75rem', width: '18px', height: '18px' }} />
-                  Location (Province)
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingLeft: '2rem' }}>
-                  {[
-                    'Phnom Penh',
-                    'Siem Reap',
-                    'Battambang',
-                    'Sihanoukville',
-                    'Kampong Cham',
-                    'Kampot',
-                    'Remote'
-                  ].map(loc => (
-                    <label key={loc} style={{ 
-                      display: 'flex', 
-                      alignItems: 'center',
-                      cursor: 'pointer',
-                      fontSize: '0.95rem',
-                      color: '#4b5563'
+                  {/* Location Section */}
+                  <div id="filter-location" style={{ marginBottom: '2rem' }}>
+                    <h3 style={{
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      color: '#1f2937',
+                      marginBottom: '1rem',
+                      display: 'flex',
+                      alignItems: 'center'
                     }}>
-                      <input 
-                        type="checkbox" 
-                        checked={filters.locations.includes(loc)}
-                        onChange={() => toggleFilter('locations', loc)}
-                        style={{ marginRight: '0.75rem', width: '16px', height: '16px' }} 
-                      />
-                      <span>{loc}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+                      <input type="checkbox" style={{ marginRight: '0.75rem', width: '18px', height: '18px' }} />
+                      Location (Province)
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingLeft: '2rem' }}>
+                      {[
+                        'Phnom Penh',
+                        'Siem Reap',
+                        'Battambang',
+                        'Sihanoukville',
+                        'Kampong Cham',
+                        'Kampot',
+                        'Remote'
+                      ].map(loc => (
+                        <label key={loc} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          cursor: 'pointer',
+                          fontSize: '0.95rem',
+                          color: '#4b5563'
+                        }}>
+                          <input
+                            type="checkbox"
+                            checked={filters.locations.includes(loc)}
+                            onChange={() => toggleFilter('locations', loc)}
+                            style={{ marginRight: '0.75rem', width: '16px', height: '16px' }}
+                          />
+                          <span>{loc}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Salary Range Section */}
-              <div id="filter-salary" style={{ marginBottom: '2rem' }}>
-                <h3 style={{ 
-                  fontSize: '1rem', 
-                  fontWeight: 700, 
-                  color: '#1f2937',
-                  marginBottom: '1rem',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  <input type="checkbox" style={{ marginRight: '0.75rem', width: '18px', height: '18px' }} />
-                  Salary Range
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingLeft: '2rem' }}>
-                  {[
-                    '$500 - $1000',
-                    '$1000 - $1500',
-                    '$1500 - $2000',
-                    '$2000 - $3000',
-                    '$3000+'
-                  ].map(range => (
-                    <label key={range} style={{ 
-                      display: 'flex', 
-                      alignItems: 'center',
-                      cursor: 'pointer',
-                      fontSize: '0.95rem',
-                      color: '#4b5563'
+                  {/* Salary Range Section */}
+                  <div id="filter-salary" style={{ marginBottom: '2rem' }}>
+                    <h3 style={{
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      color: '#1f2937',
+                      marginBottom: '1rem',
+                      display: 'flex',
+                      alignItems: 'center'
                     }}>
-                      <input 
-                        type="checkbox" 
-                        checked={filters.salaryRanges.includes(range)}
-                        onChange={() => toggleFilter('salaryRanges', range)}
-                        style={{ marginRight: '0.75rem', width: '16px', height: '16px' }} 
-                      />
-                      <span>{range}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+                      <input type="checkbox" style={{ marginRight: '0.75rem', width: '18px', height: '18px' }} />
+                      Salary Range
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingLeft: '2rem' }}>
+                      {[
+                        '$500 - $1000',
+                        '$1000 - $1500',
+                        '$1500 - $2000',
+                        '$2000 - $3000',
+                        '$3000+'
+                      ].map(range => (
+                        <label key={range} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          cursor: 'pointer',
+                          fontSize: '0.95rem',
+                          color: '#4b5563'
+                        }}>
+                          <input
+                            type="checkbox"
+                            checked={filters.salaryRanges.includes(range)}
+                            onChange={() => toggleFilter('salaryRanges', range)}
+                            style={{ marginRight: '0.75rem', width: '16px', height: '16px' }}
+                          />
+                          <span>{range}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Job Type Section */}
-              <div id="filter-jobType" style={{ marginBottom: '1rem' }}>
-                <h3 style={{ 
-                  fontSize: '1rem', 
-                  fontWeight: 700, 
-                  color: '#1f2937',
-                  marginBottom: '1rem',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  <input type="checkbox" style={{ marginRight: '0.75rem', width: '18px', height: '18px' }} />
-                  Job Type
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingLeft: '2rem' }}>
-                  {[
-                    'Full-time',
-                    'Part-time',
-                    'Contract',
-                    'Internship',
-                    'Freelance'
-                  ].map(type => (
-                    <label key={type} style={{ 
-                      display: 'flex', 
-                      alignItems: 'center',
-                      cursor: 'pointer',
-                      fontSize: '0.95rem',
-                      color: '#4b5563'
+                  {/* Job Type Section */}
+                  <div id="filter-jobType" style={{ marginBottom: '1rem' }}>
+                    <h3 style={{
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      color: '#1f2937',
+                      marginBottom: '1rem',
+                      display: 'flex',
+                      alignItems: 'center'
                     }}>
-                      <input 
-                        type="checkbox" 
-                        checked={filters.jobTypes.includes(type)}
-                        onChange={() => toggleFilter('jobTypes', type)}
-                        style={{ marginRight: '0.75rem', width: '16px', height: '16px' }} 
-                      />
-                      <span>{type}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+                      <input type="checkbox" style={{ marginRight: '0.75rem', width: '18px', height: '18px' }} />
+                      Job Type
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingLeft: '2rem' }}>
+                      {[
+                        'Full-time',
+                        'Part-time',
+                        'Contract',
+                        'Internship',
+                        'Freelance'
+                      ].map(type => (
+                        <label key={type} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          cursor: 'pointer',
+                          fontSize: '0.95rem',
+                          color: '#4b5563'
+                        }}>
+                          <input
+                            type="checkbox"
+                            checked={filters.jobTypes.includes(type)}
+                            onChange={() => toggleFilter('jobTypes', type)}
+                            style={{ marginRight: '0.75rem', width: '16px', height: '16px' }}
+                          />
+                          <span>{type}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
                 </>
               )}
             </div>
-            
+
             {/* Footer */}
             <div style={{
               padding: '1.5rem 2rem',
@@ -1433,7 +1433,7 @@ function JobsSection({
               display: 'flex',
               gap: '1rem'
             }}>
-              <button 
+              <button
                 onClick={() => {
                   resetFilters()
                 }}
@@ -1453,7 +1453,7 @@ function JobsSection({
                 <i className="fas fa-undo" style={{ marginRight: '0.5rem' }}></i>
                 Reset All
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setShowFilterModal(false)
                 }}
@@ -1509,22 +1509,22 @@ function MyJobsSection() {
   const [activeCVNotifications, setActiveCVNotifications] = useState<any[]>([])
   const [allCVNotifications, setAllCVNotifications] = useState<any[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
-  
+
   // Helper function to clean and capitalize job titles
   const cleanJobTitle = (title: string): string => {
     // Remove extra whitespace and trim
     let cleaned = title.trim().replace(/\s+/g, ' ')
-    
+
     // Capitalize first letter of each word
-    cleaned = cleaned.split(' ').map(word => 
+    cleaned = cleaned.split(' ').map(word =>
       word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
     ).join(' ')
-    
+
     // Limit to first 50 characters for very long titles
     if (cleaned.length > 50) {
       cleaned = cleaned.substring(0, 47) + '...'
     }
-    
+
     return cleaned
   }
 
@@ -1533,7 +1533,7 @@ function MyJobsSection() {
     const fetchCVs = async () => {
       const token = localStorage.getItem('access_token')
       if (!token) return
-      
+
       try {
         const response = await fetch('http://localhost:5000/api/profile/cvs', {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -1546,12 +1546,12 @@ function MyJobsSection() {
         console.error('Error fetching CVs:', error)
       }
     }
-    
+
     if (isLoggedIn) {
       fetchCVs()
     }
   }, [isLoggedIn])
-  
+
   // Fetch ML keywords from active CV on page load
   useEffect(() => {
     const fetchActiveKeywords = async () => {
@@ -1560,7 +1560,7 @@ function MyJobsSection() {
         console.log('❌ No token, skipping keyword fetch')
         return
       }
-      
+
       try {
         console.log('🔍 Fetching active CV keywords...')
         const response = await fetch('http://localhost:5000/api/profile/cvs/active-keywords', {
@@ -1584,50 +1584,50 @@ function MyJobsSection() {
         console.error('❌ Error fetching active keywords:', error)
       }
     }
-    
+
     if (isLoggedIn) {
       fetchActiveKeywords()
     }
   }, [isLoggedIn])
-  
+
   // Function to load keywords and match jobs
   const loadKeywordsAndMatchJobs = async (keywords: string[]) => {
     console.log('🔄 loadKeywordsAndMatchJobs called with:', keywords)
-    
+
     if (!keywords || keywords.length === 0) {
       console.log('⚠️ No keywords provided, clearing recommendations')
       setMlRecommendedTitles([])
       setRecommendedJobs([])
       return 0
     }
-    
+
     setMlRecommendedTitles(keywords)
     console.log('✅ Set keywords:', keywords)
-    
+
     const token = localStorage.getItem('access_token')
-    
+
     // Fetch jobs matching keywords
     console.log('🌐 Fetching jobs from backend...')
     const jobsResponse = await fetch('http://localhost:5000/api/jobs?per_page=100', {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
-    
+
     if (jobsResponse.ok) {
       const jobsData = await jobsResponse.json()
       const allJobs = jobsData.jobs || []
-      
+
       console.log(`📊 Total jobs in database: ${allJobs.length}`)
-      
+
       // Calculate match percentage for each job
       const jobsWithMatch = allJobs.map((job: any) => {
         let bestMatchPercentage = 0
         let matchedKeyword = ''
-        
+
         keywords.forEach((title: string) => {
           // Use translated English title for Khmer jobs
           const jobTitleToMatch = job.title_en ? job.title_en.toLowerCase() : job.title.toLowerCase()
           const keyword = title.toLowerCase()
-          
+
           // Exact match = 100%
           if (jobTitleToMatch === keyword) {
             bestMatchPercentage = 100
@@ -1653,8 +1653,8 @@ function MyJobsSection() {
           else {
             const jobWords = jobTitleToMatch.split(' ')
             const keywordWords = keyword.split(' ')
-            const matchedWords = jobWords.filter(jw => 
-              keywordWords.some(kw => jw.includes(kw) || kw.includes(jw))
+            const matchedWords = jobWords.filter((jw: string) =>
+              keywordWords.some((kw: string) => jw.includes(kw) || kw.includes(jw))
             )
             if (matchedWords.length > 0) {
               const match = Math.round((matchedWords.length / Math.max(jobWords.length, keywordWords.length)) * 100)
@@ -1665,29 +1665,29 @@ function MyJobsSection() {
             }
           }
         })
-        
+
         return { ...job, matchPercentage: bestMatchPercentage, matchedKeyword }
       })
-      
+
       // Filter jobs with at least 30% match and sort by match percentage
       const matchedJobs = jobsWithMatch
         .filter((job: any) => job.matchPercentage >= 30)
         .sort((a: any, b: any) => b.matchPercentage - a.matchPercentage)
-      
+
       console.log(`✅ Matched ${matchedJobs.length} jobs (${matchedJobs.length > 0 ? matchedJobs[0].matchPercentage : 0}% best match)`)
       setRecommendedJobs(matchedJobs)
       return matchedJobs.length
     }
-    
+
     return 0
   }
-  
+
   // Fetch notifications for active CV and all CVs
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem('access_token')
       if (!token) return
-      
+
       // Fetch active CV notifications
       console.log('🔔 Fetching Current CV Alert notifications...')
       const activeCVRes = await fetch('http://localhost:5000/api/notifications/active-cv', {
@@ -1698,7 +1698,7 @@ function MyJobsSection() {
         setActiveCVNotifications(data.notifications || [])
         console.log(`✅ Found ${data.notifications?.length || 0} Current CV Alert notifications`)
       }
-      
+
       // Fetch all CVs notifications
       console.log('🔔 Fetching All CV Notifications...')
       const allCVRes = await fetch('http://localhost:5000/api/notifications/all-cvs', {
@@ -1713,12 +1713,12 @@ function MyJobsSection() {
       console.error('❌ Error fetching notifications:', error)
     }
   }
-  
+
   const fetchUserJobs = async () => {
     try {
       const token = localStorage.getItem('access_token')
       if (!token) return
-      
+
       // Fetch saved jobs from backend
       const saved = await apiRequest(API_ENDPOINTS.SAVED_JOBS)
       if (saved?.success) {
@@ -1741,21 +1741,21 @@ function MyJobsSection() {
       console.error('Error fetching user jobs:', error)
     }
   }
-  
+
   // Function to call ML API and get job recommendations
   const handleCVUploadForML = async (file: File) => {
     setIsAnalyzingCV(true)
-    
+
     try {
       console.log('📤 Uploading CV to ML API:', file.name, file.type, file.size)
-      
+
       const formData = new FormData()
       formData.append('file', file)
-      
+
       // Call our Flask backend with OCR support
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 180000) // 3 minute timeout
-      
+
       const token = localStorage.getItem('access_token')
       const response = await fetch('http://localhost:5000/api/analyze-cv', {
         method: 'POST',
@@ -1763,60 +1763,60 @@ function MyJobsSection() {
         body: formData,
         signal: controller.signal
       })
-      
+
       clearTimeout(timeoutId)
-      
+
       console.log('📥 API Response Status:', response.status, response.statusText)
-      
+
       if (!response.ok) {
         const errorData = await response.json()
         console.error('❌ API Error Response:', errorData)
         throw new Error(errorData.error || `API returned ${response.status}`)
       }
-      
+
       const data = await response.json()
       console.log('✅ API Response Data:', data)
-      
+
       // Extract data from ML response
       const extractedText = data.extracted_text || ''
       const recommendations = data.recommendations || []
       const ocrUsed = data.ocr_used || false
       const extractionMethod = data.extraction_method || 'text'
-      
+
       console.log(`📊 Extracted ${extractedText.length} chars, ${recommendations.length} recommendations`)
       console.log(`🔍 Extraction method: ${extractionMethod}${ocrUsed ? ' (OCR applied for scanned document)' : ''}`)
-      
+
       // Store extracted text
       setExtractedText(extractedText)
-      
+
       // Extract job titles from recommendations
       const jobTitles = recommendations.map((rec: any) => rec.job_title)
       setMlRecommendedTitles(jobTitles)
-      
+
       console.log('🎯 Recommended job titles:', jobTitles)
-      
+
       // Fetch actual jobs matching these titles from our backend
       if (jobTitles.length > 0) {
         const token = localStorage.getItem('access_token')
         const jobsResponse = await fetch('http://localhost:5000/api/jobs?per_page=100', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         })
-        
+
         let matchedJobsCount = 0
-        
+
         if (jobsResponse.ok) {
           const jobsData = await jobsResponse.json()
           const allJobs = jobsData.jobs || []
-          
+
           // Calculate match percentage for each job
           const jobsWithMatch = allJobs.map((job: any) => {
             let bestMatchPercentage = 0
             let matchedKeyword = ''
-            
+
             jobTitles.forEach((title: string) => {
               const jobTitle = job.title.toLowerCase()
               const keyword = title.toLowerCase()
-              
+
               // Exact match = 100%
               if (jobTitle === keyword) {
                 bestMatchPercentage = 100
@@ -1842,8 +1842,8 @@ function MyJobsSection() {
               else {
                 const jobWords = jobTitle.split(' ')
                 const keywordWords = keyword.split(' ')
-                const matchedWords = jobWords.filter(jw => 
-                  keywordWords.some(kw => jw.includes(kw) || kw.includes(jw))
+                const matchedWords = jobWords.filter((jw: string) =>
+                  keywordWords.some((kw: string) => jw.includes(kw) || kw.includes(jw))
                 )
                 if (matchedWords.length > 0) {
                   const match = Math.round((matchedWords.length / Math.max(jobWords.length, keywordWords.length)) * 100)
@@ -1854,25 +1854,25 @@ function MyJobsSection() {
                 }
               }
             })
-            
+
             return { ...job, matchPercentage: bestMatchPercentage, matchedKeyword }
           })
-          
+
           // Filter jobs with at least 30% match and sort by match percentage
           const matchedJobs = jobsWithMatch
             .filter((job: any) => job.matchPercentage >= 30)
             .sort((a: any, b: any) => b.matchPercentage - a.matchPercentage)
-          
+
           matchedJobsCount = matchedJobs.length
           console.log(`✅ Matched ${matchedJobsCount} jobs from database`)
           setRecommendedJobs(matchedJobs)
         }
-      
+
         // Refresh CV list to show newly uploaded CV
         const fetchCVs = async () => {
           const token = localStorage.getItem('access_token')
           if (!token) return
-          
+
           try {
             const cvResponse = await fetch('http://localhost:5000/api/profile/cvs', {
               headers: { 'Authorization': `Bearer ${token}` }
@@ -1886,18 +1886,18 @@ function MyJobsSection() {
             console.error('Error fetching CVs:', error)
           }
         }
-        
+
         await fetchCVs()
-        
+
         const ocrMessage = ocrUsed ? '\n🔍 OCR: Applied for scanned document' : ''
         const cvSavedMessage = data.cv_id ? `\n💾 CV saved to your profile: ${data.cv_name}` : ''
         alert(`✅ CV Analyzed Successfully!${cvSavedMessage}\n\n📄 Extracted: ${extractedText.length} characters${ocrMessage}\n🎯 AI Recommendations: ${recommendations.length} job titles\n💼 Matched Jobs: ${matchedJobsCount} from our database`)
       }
     } catch (error: any) {
       console.error('❌ Error analyzing CV:', error)
-      
+
       let errorMessage = '❌ Failed to analyze CV.\n\n'
-      
+
       if (error.name === 'AbortError') {
         errorMessage += 'Request timeout. The ML server may be starting up (first request can take 1-3 minutes). Please try again.'
       } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
@@ -1907,22 +1907,22 @@ function MyJobsSection() {
       } else {
         errorMessage += `Error: ${error.message}\n\nPlease ensure you upload a text-based PDF or DOCX (not a scanned image).`
       }
-      
+
       alert(errorMessage)
     } finally {
       setIsAnalyzingCV(false)
     }
   }
-  
+
   // Check auth status and load data accordingly
   useEffect(() => {
     setMounted(true)
-    
+
     if (typeof window !== 'undefined') {
       const currentUser = localStorage.getItem('currentUser')
       const loggedIn = !!currentUser
       setIsLoggedIn(loggedIn)
-      
+
       // Clear data if not logged in
       if (!loggedIn) {
         setSavedJobs([])
@@ -2015,7 +2015,7 @@ function MyJobsSection() {
       if (response?.success) {
         alert('Application added successfully!')
         setShowAddAppModal(false)
-        
+
         // Reset form
         setNewAppData({
           title: '',
@@ -2025,7 +2025,7 @@ function MyJobsSection() {
           status: 'Applied',
           notes: ''
         })
-        
+
         // Refresh applications list
         await fetchUserJobs()
       } else {
@@ -2044,7 +2044,7 @@ function MyJobsSection() {
 
   const handleStatusChange = async (newStatus: string) => {
     if (!selectedApplication) return
-    
+
     if (typeof window === 'undefined') return
     const token = localStorage.getItem('access_token')
     if (!token) return
@@ -2057,7 +2057,7 @@ function MyJobsSection() {
 
       if (data?.success) {
         // Update local state
-        const updatedApplications = applications.map(app => 
+        const updatedApplications = applications.map(app =>
           app.id === selectedApplication.id ? { ...app, status: newStatus } : app
         )
         setApplications(updatedApplications)
@@ -2074,7 +2074,7 @@ function MyJobsSection() {
 
   const getStatusColor = (status: string) => {
     const statusLower = status.toLowerCase()
-    switch(statusLower) {
+    switch (statusLower) {
       case 'applied': return '#3b82f6'
       case 'reviewed': return '#f59e0b'
       case 'interview': return '#10b981'
@@ -2091,7 +2091,7 @@ function MyJobsSection() {
       const now = new Date()
       const diffTime = Math.abs(now.getTime() - date.getTime())
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-      
+
       if (diffDays === 0) return 'Today'
       if (diffDays === 1) return 'Yesterday'
       if (diffDays < 7) return `${diffDays} days ago`
@@ -2105,21 +2105,21 @@ function MyJobsSection() {
   return (
     <div className="my-jobs-container">
       <h1>My Jobs</h1>
-      
+
       <div className="tabs">
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'recommended' ? 'active' : ''}`}
           onClick={() => setActiveTab('recommended')}
         >
           <i className="fas fa-star"></i> Recommended ({recommendedJobs.length})
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'saved' ? 'active' : ''}`}
           onClick={() => setActiveTab('saved')}
         >
           <i className="fas fa-heart"></i> Saved Jobs ({savedJobs.length})
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'applications' ? 'active' : ''}`}
           onClick={() => setActiveTab('applications')}
         >
@@ -2135,15 +2135,15 @@ function MyJobsSection() {
               <i className="fas fa-sync"></i> Refresh
             </button>
           </div>
-          
+
           {/* Upload CV Button and Keywords */}
           <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
-              <button 
+              <button
                 onClick={() => setShowUploadCVModal(true)}
                 className="btn-primary"
                 disabled={isAnalyzingCV}
-                style={{ 
+                style={{
                   alignSelf: 'flex-start',
                   display: 'flex',
                   alignItems: 'center',
@@ -2153,11 +2153,11 @@ function MyJobsSection() {
                   cursor: isAnalyzingCV ? 'not-allowed' : 'pointer'
                 }}
               >
-                <i className={isAnalyzingCV ? "fas fa-spinner fa-spin" : "fas fa-upload"}></i> 
+                <i className={isAnalyzingCV ? "fas fa-spinner fa-spin" : "fas fa-upload"}></i>
                 {isAnalyzingCV ? 'Analyzing CV...' : 'Upload CV for Job Matching'}
               </button>
             </div>
-            
+
             {/* Keywords Display */}
             <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
               <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', fontWeight: 600, color: '#64748b' }}>
@@ -2166,7 +2166,7 @@ function MyJobsSection() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {mlRecommendedTitles.length > 0 ? (
                   mlRecommendedTitles.slice(0, 10).map((title, idx) => (
-                    <span 
+                    <span
                       key={idx}
                       style={{
                         padding: '0.375rem 0.75rem',
@@ -2220,12 +2220,12 @@ function MyJobsSection() {
               <Link key={job.id} href={`/jobs/${job.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div className="job-card" style={{ marginBottom: '1rem', cursor: 'pointer' }}>
                   <div className="job-header" style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-                    <img 
-                      src={job.logo} 
+                    <img
+                      src={job.logo}
                       alt={job.company}
-                      style={{ 
-                        width: '80px', 
-                        height: '80px', 
+                      style={{
+                        width: '80px',
+                        height: '80px',
                         borderRadius: '8px',
                         objectFit: 'cover',
                         flexShrink: 0
@@ -2235,9 +2235,9 @@ function MyJobsSection() {
                         (e.target as HTMLImageElement).nextElementSibling?.setAttribute('style', 'display: flex');
                       }}
                     />
-                    <div style={{ 
-                      width: '80px', 
-                      height: '80px', 
+                    <div style={{
+                      width: '80px',
+                      height: '80px',
                       borderRadius: '8px',
                       background: '#f3f4f6',
                       display: 'none',
@@ -2252,11 +2252,11 @@ function MyJobsSection() {
                         <div style={{ flex: 1 }}>
                           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600, color: '#1e293b' }}>{job.company}</h3>
                           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem', flexWrap: 'wrap' }}>
-                            <span style={{ 
-                              background: job.matchPercentage >= 80 ? '#10b981' : job.matchPercentage >= 60 ? '#f97316' : '#eab308', 
-                              color: 'white', 
-                              padding: '0.2rem 0.6rem', 
-                              borderRadius: '12px', 
+                            <span style={{
+                              background: job.matchPercentage >= 80 ? '#10b981' : job.matchPercentage >= 60 ? '#f97316' : '#eab308',
+                              color: 'white',
+                              padding: '0.2rem 0.6rem',
+                              borderRadius: '12px',
                               fontSize: '0.7rem',
                               fontWeight: 600,
                               display: 'inline-block'
@@ -2264,11 +2264,11 @@ function MyJobsSection() {
                               {job.matchPercentage}% Match
                             </span>
                             {job.matchedKeyword && (
-                              <span style={{ 
-                                background: '#e0f2fe', 
-                                color: '#0369a1', 
-                                padding: '0.2rem 0.6rem', 
-                                borderRadius: '12px', 
+                              <span style={{
+                                background: '#e0f2fe',
+                                color: '#0369a1',
+                                padding: '0.2rem 0.6rem',
+                                borderRadius: '12px',
                                 fontSize: '0.7rem',
                                 fontWeight: 500,
                                 display: 'inline-block'
@@ -2278,7 +2278,7 @@ function MyJobsSection() {
                             )}
                           </div>
                         </div>
-                        <button 
+                        <button
                           className="btn-save-job"
                           onClick={(e) => {
                             e.preventDefault()
@@ -2340,7 +2340,7 @@ function MyJobsSection() {
               <i className="fas fa-sync"></i> Refresh
             </button>
           </div>
-          
+
 
           <div className="jobs-list">
             {!isLoggedIn ? (
@@ -2361,12 +2361,12 @@ function MyJobsSection() {
                 <Link key={job.id} href={`/jobs/${job.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <div className="job-card" style={{ marginBottom: '1rem', cursor: 'pointer' }}>
                     <div className="job-header" style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-                      <img 
-                        src={job.logo} 
+                      <img
+                        src={job.logo}
                         alt={job.company}
-                        style={{ 
-                          width: '80px', 
-                          height: '80px', 
+                        style={{
+                          width: '80px',
+                          height: '80px',
                           borderRadius: '8px',
                           objectFit: 'cover',
                           flexShrink: 0
@@ -2376,9 +2376,9 @@ function MyJobsSection() {
                           (e.target as HTMLImageElement).nextElementSibling?.setAttribute('style', 'display: flex');
                         }}
                       />
-                      <div style={{ 
-                        width: '80px', 
-                        height: '80px', 
+                      <div style={{
+                        width: '80px',
+                        height: '80px',
                         borderRadius: '8px',
                         background: '#f3f4f6',
                         display: 'none',
@@ -2391,8 +2391,8 @@ function MyJobsSection() {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600, color: '#1e293b' }}>{job.company}</h3>
-                          <button 
-                            className="btn-save-job" 
+                          <button
+                            className="btn-save-job"
                             onClick={(e) => {
                               e.preventDefault()
                               e.stopPropagation()
@@ -2457,8 +2457,8 @@ function MyJobsSection() {
             <h2>My Applications</h2>
             <div style={{ display: 'flex', gap: '0.75rem' }}>
               {isLoggedIn && (
-                <button 
-                  className="btn-primary" 
+                <button
+                  className="btn-primary"
                   onClick={() => setShowAddAppModal(true)}
                   style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                 >
@@ -2470,7 +2470,7 @@ function MyJobsSection() {
               </button>
             </div>
           </div>
-          
+
 
           {!isLoggedIn ? (
             <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginTop: '2rem' }}>
@@ -2493,119 +2493,119 @@ function MyJobsSection() {
             </div>
           ) : (
             <>
-          {/* Kanban Board - 3 Columns */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
-            {/* Column 1: Applied */}
-            <div style={{ background: '#eff6ff', borderRadius: '12px', padding: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '2px solid #3b82f6' }}>
-                <h3 style={{ margin: 0, color: '#1e40af', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <i className="fas fa-paper-plane"></i> Applied
-                </h3>
-                <span style={{ background: '#3b82f6', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}>
-                  {applications.filter(a => a.status.toLowerCase() === 'applied').length}
-                </span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {applications.filter(a => a.status.toLowerCase() === 'applied').map((app) => (
-                  <div key={app.id} style={{ background: 'white', padding: '1rem', borderRadius: '8px', border: '1px solid #bfdbfe', cursor: 'pointer' }} onClick={() => handleViewAppDetail(app)}>
-                    <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.95rem', color: '#1e293b' }}>{app.job?.title || 'Unknown Position'}</h4>
-                    <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', color: '#64748b' }}>{app.job?.company || 'Unknown Company'}</p>
-                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>
-                      <i className="fas fa-clock"></i> {formatApplicationDate(app.applied_date)}
-                    </p>
+              {/* Kanban Board - 3 Columns */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+                {/* Column 1: Applied */}
+                <div style={{ background: '#eff6ff', borderRadius: '12px', padding: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '2px solid #3b82f6' }}>
+                    <h3 style={{ margin: 0, color: '#1e40af', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <i className="fas fa-paper-plane"></i> Applied
+                    </h3>
+                    <span style={{ background: '#3b82f6', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}>
+                      {applications.filter(a => a.status.toLowerCase() === 'applied').length}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {applications.filter(a => a.status.toLowerCase() === 'applied').map((app) => (
+                      <div key={app.id} style={{ background: 'white', padding: '1rem', borderRadius: '8px', border: '1px solid #bfdbfe', cursor: 'pointer' }} onClick={() => handleViewAppDetail(app)}>
+                        <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.95rem', color: '#1e293b' }}>{app.job?.title || 'Unknown Position'}</h4>
+                        <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', color: '#64748b' }}>{app.job?.company || 'Unknown Company'}</p>
+                        <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>
+                          <i className="fas fa-clock"></i> {formatApplicationDate(app.applied_date)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Column 2: Reviewed */}
-            <div style={{ background: '#fffbeb', borderRadius: '12px', padding: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '2px solid #f59e0b' }}>
-                <h3 style={{ margin: 0, color: '#92400e', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <i className="fas fa-eye"></i> Reviewed
-                </h3>
-                <span style={{ background: '#f59e0b', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}>
-                  {applications.filter(a => a.status.toLowerCase() === 'reviewed').length}
-                </span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {applications.filter(a => a.status.toLowerCase() === 'reviewed').map((app) => (
-                  <div key={app.id} style={{ background: 'white', padding: '1rem', borderRadius: '8px', border: '1px solid #fde68a', cursor: 'pointer' }} onClick={() => handleViewAppDetail(app)}>
-                    <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.95rem', color: '#1e293b' }}>{app.job?.title || 'Unknown Position'}</h4>
-                    <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', color: '#64748b' }}>{app.job?.company || 'Unknown Company'}</p>
-                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>
-                      <i className="fas fa-clock"></i> {formatApplicationDate(app.applied_date)}
-                    </p>
+                {/* Column 2: Reviewed */}
+                <div style={{ background: '#fffbeb', borderRadius: '12px', padding: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '2px solid #f59e0b' }}>
+                    <h3 style={{ margin: 0, color: '#92400e', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <i className="fas fa-eye"></i> Reviewed
+                    </h3>
+                    <span style={{ background: '#f59e0b', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}>
+                      {applications.filter(a => a.status.toLowerCase() === 'reviewed').length}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {applications.filter(a => a.status.toLowerCase() === 'reviewed').map((app) => (
+                      <div key={app.id} style={{ background: 'white', padding: '1rem', borderRadius: '8px', border: '1px solid #fde68a', cursor: 'pointer' }} onClick={() => handleViewAppDetail(app)}>
+                        <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.95rem', color: '#1e293b' }}>{app.job?.title || 'Unknown Position'}</h4>
+                        <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', color: '#64748b' }}>{app.job?.company || 'Unknown Company'}</p>
+                        <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>
+                          <i className="fas fa-clock"></i> {formatApplicationDate(app.applied_date)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Column 3: Interview */}
-            <div style={{ background: '#f0fdf4', borderRadius: '12px', padding: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '2px solid #10b981' }}>
-                <h3 style={{ margin: 0, color: '#065f46', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <i className="fas fa-user-tie"></i> Interview
-                </h3>
-                <span style={{ background: '#10b981', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}>
-                  {applications.filter(a => a.status.toLowerCase() === 'interview').length}
-                </span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {applications.filter(a => a.status.toLowerCase() === 'interview').map((app) => (
-                  <div key={app.id} style={{ background: 'white', padding: '1rem', borderRadius: '8px', border: '1px solid #a7f3d0', cursor: 'pointer' }} onClick={() => handleViewAppDetail(app)}>
-                    <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.95rem', color: '#1e293b' }}>{app.job?.title || 'Unknown Position'}</h4>
-                    <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', color: '#64748b' }}>{app.job?.company || 'Unknown Company'}</p>
-                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>
-                      <i className="fas fa-clock"></i> {formatApplicationDate(app.applied_date)}
-                    </p>
+                {/* Column 3: Interview */}
+                <div style={{ background: '#f0fdf4', borderRadius: '12px', padding: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '2px solid #10b981' }}>
+                    <h3 style={{ margin: 0, color: '#065f46', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <i className="fas fa-user-tie"></i> Interview
+                    </h3>
+                    <span style={{ background: '#10b981', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}>
+                      {applications.filter(a => a.status.toLowerCase() === 'interview').length}
+                    </span>
                   </div>
-                ))}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {applications.filter(a => a.status.toLowerCase() === 'interview').map((app) => (
+                      <div key={app.id} style={{ background: 'white', padding: '1rem', borderRadius: '8px', border: '1px solid #a7f3d0', cursor: 'pointer' }} onClick={() => handleViewAppDetail(app)}>
+                        <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.95rem', color: '#1e293b' }}>{app.job?.title || 'Unknown Position'}</h4>
+                        <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', color: '#64748b' }}>{app.job?.company || 'Unknown Company'}</p>
+                        <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>
+                          <i className="fas fa-clock"></i> {formatApplicationDate(app.applied_date)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* Other Statuses (Offer, Rejected, etc.) */}
-          {applications.filter(a => !['applied', 'reviewed', 'interview'].includes(a.status.toLowerCase())).length > 0 && (
-            <div style={{ marginTop: '2rem' }}>
-              <h3 style={{ marginBottom: '1rem', color: '#475569' }}>
-                <i className="fas fa-list"></i> Other Statuses
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
-                {applications.filter(a => !['applied', 'reviewed', 'interview'].includes(a.status.toLowerCase())).map((app) => (
-                  <div 
-                    key={app.id} 
-                    style={{ 
-                      background: 'white', 
-                      padding: '1.25rem', 
-                      borderRadius: '12px', 
-                      border: `2px solid ${getStatusColor(app.status)}`,
-                      cursor: 'pointer'
-                    }}
-                    onClick={() => handleViewAppDetail(app)}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.75rem' }}>
-                      <h4 style={{ margin: 0, fontSize: '1rem', color: '#1e293b' }}>{app.job?.title || 'Unknown Position'}</h4>
-                      <span style={{ 
-                        background: getStatusColor(app.status), 
-                        color: 'white', 
-                        padding: '0.25rem 0.75rem', 
-                        borderRadius: '20px', 
-                        fontSize: '0.75rem',
-                        fontWeight: 600
-                      }}>
-                        {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
-                      </span>
-                    </div>
-                    <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#64748b' }}>{app.job?.company || 'Unknown Company'}</p>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>
-                      <i className="fas fa-clock"></i> {formatApplicationDate(app.applied_date)}
-                    </p>
+              {/* Other Statuses (Offer, Rejected, etc.) */}
+              {applications.filter(a => !['applied', 'reviewed', 'interview'].includes(a.status.toLowerCase())).length > 0 && (
+                <div style={{ marginTop: '2rem' }}>
+                  <h3 style={{ marginBottom: '1rem', color: '#475569' }}>
+                    <i className="fas fa-list"></i> Other Statuses
+                  </h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
+                    {applications.filter(a => !['applied', 'reviewed', 'interview'].includes(a.status.toLowerCase())).map((app) => (
+                      <div
+                        key={app.id}
+                        style={{
+                          background: 'white',
+                          padding: '1.25rem',
+                          borderRadius: '12px',
+                          border: `2px solid ${getStatusColor(app.status)}`,
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => handleViewAppDetail(app)}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.75rem' }}>
+                          <h4 style={{ margin: 0, fontSize: '1rem', color: '#1e293b' }}>{app.job?.title || 'Unknown Position'}</h4>
+                          <span style={{
+                            background: getStatusColor(app.status),
+                            color: 'white',
+                            padding: '0.25rem 0.75rem',
+                            borderRadius: '20px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600
+                          }}>
+                            {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                          </span>
+                        </div>
+                        <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#64748b' }}>{app.job?.company || 'Unknown Company'}</p>
+                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>
+                          <i className="fas fa-clock"></i> {formatApplicationDate(app.applied_date)}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -2621,7 +2621,7 @@ function MyJobsSection() {
               <h2>Application Details</h2>
               <button className="close-btn" onClick={() => setShowAppDetailModal(false)}>&times;</button>
             </div>
-            
+
             <div style={{ padding: '1.5rem 0' }}>
               <div style={{ marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
@@ -2629,10 +2629,10 @@ function MyJobsSection() {
                     <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>{selectedApplication.job?.title || 'N/A'}</h3>
                     <p style={{ margin: 0, fontSize: '1.1rem', color: '#64748b' }}>{selectedApplication.job?.company || 'N/A'}</p>
                   </div>
-                  <span style={{ 
-                    background: getStatusColor(selectedApplication.status), 
-                    color: 'white', 
-                    padding: '0.5rem 1rem', 
+                  <span style={{
+                    background: getStatusColor(selectedApplication.status),
+                    color: 'white',
+                    padding: '0.5rem 1rem',
                     borderRadius: '20px',
                     fontWeight: 600
                   }}>
@@ -2702,13 +2702,13 @@ function MyJobsSection() {
                       <i className="fas fa-sticky-note"></i> Notes
                     </p>
                   </div>
-                  <textarea 
+                  <textarea
                     defaultValue={selectedApplication.notes || 'No notes added yet'}
                     rows={4}
-                    style={{ 
-                      width: '100%', 
-                      padding: '0.75rem', 
-                      border: '1px solid #e2e8f0', 
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      border: '1px solid #e2e8f0',
                       borderRadius: '6px',
                       fontSize: '0.9rem',
                       fontFamily: 'inherit',
@@ -2719,7 +2719,7 @@ function MyJobsSection() {
 
                 {/* Additional Actions */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.75rem' }}>
-                  <button 
+                  <button
                     onClick={async () => {
                       if (confirm('Are you sure you want to delete this application?')) {
                         try {
@@ -2757,13 +2757,13 @@ function MyJobsSection() {
                 </div>
               </div>
             </div>
-            
+
             <div className="modal-actions">
               <button className="btn-secondary" onClick={() => setShowAppDetailModal(false)}>
                 Close
               </button>
               {selectedApplication.job?.status !== 'manual' && (
-                <button 
+                <button
                   className="btn-primary"
                   onClick={() => {
                     if (selectedApplication.job_id) {
@@ -2787,7 +2787,7 @@ function MyJobsSection() {
               <h2>Add Application</h2>
               <button className="close-btn" onClick={() => setShowAddAppModal(false)}>&times;</button>
             </div>
-            
+
             <div style={{ padding: '1.5rem 0' }}>
               <div className="form-group" style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#374151' }}>
@@ -2796,7 +2796,7 @@ function MyJobsSection() {
                 <input
                   type="text"
                   value={newAppData.title}
-                  onChange={(e) => setNewAppData({...newAppData, title: e.target.value})}
+                  onChange={(e) => setNewAppData({ ...newAppData, title: e.target.value })}
                   placeholder="e.g., Senior Software Engineer"
                   style={{
                     width: '100%',
@@ -2815,7 +2815,7 @@ function MyJobsSection() {
                 <input
                   type="text"
                   value={newAppData.company}
-                  onChange={(e) => setNewAppData({...newAppData, company: e.target.value})}
+                  onChange={(e) => setNewAppData({ ...newAppData, company: e.target.value })}
                   placeholder="e.g., Tech Corp Inc."
                   style={{
                     width: '100%',
@@ -2834,7 +2834,7 @@ function MyJobsSection() {
                 <input
                   type="text"
                   value={newAppData.location}
-                  onChange={(e) => setNewAppData({...newAppData, location: e.target.value})}
+                  onChange={(e) => setNewAppData({ ...newAppData, location: e.target.value })}
                   placeholder="e.g., Phnom Penh"
                   style={{
                     width: '100%',
@@ -2853,7 +2853,7 @@ function MyJobsSection() {
                 <input
                   type="text"
                   value={newAppData.salary}
-                  onChange={(e) => setNewAppData({...newAppData, salary: e.target.value})}
+                  onChange={(e) => setNewAppData({ ...newAppData, salary: e.target.value })}
                   placeholder="e.g., $1000-1500"
                   style={{
                     width: '100%',
@@ -2871,7 +2871,7 @@ function MyJobsSection() {
                 </label>
                 <select
                   value={newAppData.status}
-                  onChange={(e) => setNewAppData({...newAppData, status: e.target.value})}
+                  onChange={(e) => setNewAppData({ ...newAppData, status: e.target.value })}
                   style={{
                     width: '100%',
                     padding: '0.75rem',
@@ -2895,7 +2895,7 @@ function MyJobsSection() {
                 </label>
                 <textarea
                   value={newAppData.notes}
-                  onChange={(e) => setNewAppData({...newAppData, notes: e.target.value})}
+                  onChange={(e) => setNewAppData({ ...newAppData, notes: e.target.value })}
                   placeholder="Add any notes about this application..."
                   rows={4}
                   style={{
@@ -2910,7 +2910,7 @@ function MyJobsSection() {
                 />
               </div>
             </div>
-            
+
             <div className="modal-actions">
               <button className="btn-secondary" onClick={() => setShowAddAppModal(false)}>
                 Cancel
@@ -2937,7 +2937,7 @@ function MyJobsSection() {
                 setUploadOption(null)
               }}>&times;</button>
             </div>
-            
+
             {!uploadOption ? (
               <div style={{ padding: '2rem' }}>
                 <p style={{ marginBottom: '1.5rem', color: '#64748b' }}>Choose how you want to upload your CV:</p>
@@ -2994,8 +2994,8 @@ function MyJobsSection() {
               </div>
             ) : uploadOption === 'upload' ? (
               <div style={{ padding: '2rem' }}>
-                <div style={{ 
-                  background: '#fef3c7', 
+                <div style={{
+                  background: '#fef3c7',
                   border: '1px solid #fbbf24',
                   borderRadius: '8px',
                   padding: '1rem',
@@ -3005,19 +3005,19 @@ function MyJobsSection() {
                 }}>
                   <i className="fas fa-exclamation-triangle" style={{ color: '#f59e0b', fontSize: '1.25rem', flexShrink: 0 }}></i>
                   <div style={{ fontSize: '0.875rem', color: '#92400e' }}>
-                    <strong>Important:</strong> Please upload a text-based resume (not a scanned image). 
+                    <strong>Important:</strong> Please upload a text-based resume (not a scanned image).
                     Our AI will extract your resume text and analyze it. If the analysis seems wrong, please fix your resume and upload again.
                   </div>
                 </div>
-                <div style={{ 
-                  border: '2px dashed #d1d5db', 
-                  borderRadius: '8px', 
+                <div style={{
+                  border: '2px dashed #d1d5db',
+                  borderRadius: '8px',
                   padding: '3rem 2rem',
                   textAlign: 'center',
                   cursor: 'pointer',
                   marginBottom: '1.5rem'
                 }}
-                onClick={() => fileInputRef.current?.click()}
+                  onClick={() => fileInputRef.current?.click()}
                 >
                   <i className="fas fa-cloud-upload-alt" style={{ fontSize: '3rem', color: '#9ca3af', marginBottom: '1rem', display: 'block' }}></i>
                   <p style={{ color: '#64748b', marginBottom: '0.5rem' }}>Click to upload or drag and drop</p>
@@ -3037,10 +3037,10 @@ function MyJobsSection() {
                         alert('❌ Please upload a PDF, DOC, or DOCX file')
                         return
                       }
-                      
+
                       setShowUploadCVModal(false)
                       setUploadOption(null)
-                      
+
                       // Call ML API to analyze CV
                       await handleCVUploadForML(file)
                     }
@@ -3081,7 +3081,7 @@ function MyJobsSection() {
                                   method: 'POST',
                                   headers: { 'Authorization': `Bearer ${token}` }
                                 })
-                                
+
                                 if (analyzeResponse.ok) {
                                   const analyzeData = await analyzeResponse.json()
                                   if (analyzeData.keywords && analyzeData.keywords.length > 0) {
@@ -3172,7 +3172,7 @@ function ProfileSection() {
 
   useEffect(() => {
     setMounted(true)
-    
+
     if (typeof window !== 'undefined') {
       const currentUser = localStorage.getItem('currentUser')
       setIsLoggedIn(!!currentUser)
@@ -3200,7 +3200,7 @@ function ProfileSection() {
     <div className="profile-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1>My Profile</h1>
-        <button 
+        <button
           className="btn-primary"
           onClick={() => setIsEditing(!isEditing)}
         >
@@ -3257,7 +3257,7 @@ function ProfileSection() {
         {isEditing ? (
           <textarea
             value={profileData.bio}
-            onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
+            onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
             rows={4}
             style={{
               width: '100%',
@@ -3331,14 +3331,14 @@ function ProfileSection() {
 
       {isEditing && (
         <div style={{ marginTop: '2rem', textAlign: 'right' }}>
-          <button 
+          <button
             className="btn-secondary"
             onClick={() => setIsEditing(false)}
             style={{ marginRight: '1rem' }}
           >
             Cancel
           </button>
-          <button 
+          <button
             className="btn-primary"
             onClick={() => {
               alert('Profile updated successfully!')

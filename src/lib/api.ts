@@ -58,7 +58,7 @@ export const getAuthHeaders = () => {
 // Helper function for API requests
 export const apiRequest = async (url: string, options: RequestInit = {}) => {
   const headers = getAuthHeaders();
-  
+
   try {
     const response = await fetch(url, {
       ...options,
@@ -82,51 +82,63 @@ export const apiRequest = async (url: string, options: RequestInit = {}) => {
 
 // API client with common methods
 const api = {
-  get: async (endpoint: string) => {
-    const token = localStorage.getItem('access_token');
+  get: async (endpoint: string, options: RequestInit = {}) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'GET',
+      ...options,
       headers: {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
       },
     });
     return response.json();
   },
-  
-  post: async (endpoint: string, data?: any) => {
-    const token = localStorage.getItem('access_token');
+
+  post: async (endpoint: string, data?: any, options: RequestInit = {}) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    const isFormData = data instanceof FormData;
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
+      ...options,
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
       },
-      body: data ? JSON.stringify(data) : undefined,
+      body: data ? (isFormData ? data : JSON.stringify(data)) : undefined,
     });
     return response.json();
   },
-  
-  put: async (endpoint: string, data?: any) => {
-    const token = localStorage.getItem('access_token');
+
+  put: async (endpoint: string, data?: any, options: RequestInit = {}) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    const isFormData = data instanceof FormData;
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'PUT',
+      ...options,
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
       },
-      body: data ? JSON.stringify(data) : undefined,
+      body: data ? (isFormData ? data : JSON.stringify(data)) : undefined,
     });
     return response.json();
   },
-  
-  delete: async (endpoint: string) => {
-    const token = localStorage.getItem('access_token');
+
+  delete: async (endpoint: string, options: RequestInit = {}) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'DELETE',
+      ...options,
       headers: {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
       },
     });
     return response.json();
