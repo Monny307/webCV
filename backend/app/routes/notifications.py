@@ -150,13 +150,18 @@ def check_and_create_notifications(job_id):
     Check if a new job matches any user's CV keywords and create notifications.
     This function should be called after a job is added or scraped.
     """
+    import re
     try:
         job = Job.query.get(job_id)
         if not job:
             return
         
-        job_title_lower = job.title.lower()
-        job_desc_lower = job.description.lower() if job.description else ''
+        # Prepare job text for matching
+        job_title = job.title.lower()
+        job_desc = job.description.lower() if job.description else ''
+        job_reqs = job.requirements.lower() if hasattr(job, 'requirements') and job.requirements else ''
+        
+        combined_text = f"{job_title} {job_desc} {job_reqs}"
         
         # Get all users with CVs
         profiles = Profile.query.all()
@@ -170,7 +175,8 @@ def check_and_create_notifications(job_id):
                     matched_keywords = []
                     for keyword in cv_keywords.keywords:
                         keyword_lower = keyword.lower()
-                        if keyword_lower in job_title_lower or keyword_lower in job_desc_lower:
+                        # Use word boundary matching for better accuracy
+                        if re.search(r'\b' + re.escape(keyword_lower) + r'\b', combined_text):
                             matched_keywords.append(keyword)
                     
                     # Create notification if there are matches
@@ -201,7 +207,8 @@ def check_and_create_notifications(job_id):
                     matched_keywords = []
                     for keyword in cv_keywords.keywords:
                         keyword_lower = keyword.lower()
-                        if keyword_lower in job_title_lower or keyword_lower in job_desc_lower:
+                        # Use word boundary matching
+                        if re.search(r'\b' + re.escape(keyword_lower) + r'\b', combined_text):
                             matched_keywords.append(keyword)
                     
                     # Create notification if there are matches

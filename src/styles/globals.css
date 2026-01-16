@@ -5843,7 +5843,7 @@ h6,
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    color: #3b82f6;
+    color: #e67a32;
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
@@ -5852,14 +5852,14 @@ h6,
 }
 
 .pagination-btn:hover:not(:disabled) {
-    border-color: #3b82f6;
+    border-color: #e67a32;
     background: #f8fafc;
     transform: translateY(-1px);
 }
 
 .pagination-btn.active {
-    background: #3b82f6;
-    border-color: #3b82f6;
+    background: #e67a32;
+    border-color: #e67a32;
     color: white;
     box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
 }

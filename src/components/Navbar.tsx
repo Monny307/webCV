@@ -10,6 +10,7 @@ export default function Navbar() {
   const [profilePhoto, setProfilePhoto] = useState('')
   const [scrolled, setScrolled] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     setMounted(true)
@@ -31,8 +32,34 @@ export default function Navbar() {
     }
 
     window.addEventListener('scroll', handleScroll)
+
+    // Fetch notifications initially
+    if (localStorage.getItem('access_token')) {
+      fetchUnreadCount()
+    }
+
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const fetchUnreadCount = async () => {
+    try {
+      const token = localStorage.getItem('access_token')
+      if (!token) return
+
+      const response = await fetch('/api/notifications/unread-count', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setUnreadCount(data.total || 0)
+      }
+    } catch (error) {
+      console.error('Error fetching unread count:', error)
+    }
+  }
 
   const fetchProfilePhoto = async () => {
     try {
@@ -183,6 +210,7 @@ export default function Navbar() {
             {/* Notification Bell */}
             <Link href="/notifications" className="notification-icon" aria-label="Notifications">
               <i className="fas fa-bell"></i>
+              {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
             </Link>
 
             {/* User Profile Dropdown */}

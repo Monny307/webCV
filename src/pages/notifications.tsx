@@ -51,6 +51,31 @@ export default function Notifications() {
     }
   }
 
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      const token = localStorage.getItem('access_token')
+      const res = await fetch(`/api/notifications/${id}/read`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+
+      if (res.ok) {
+        // Update local state
+        setActiveCVNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n))
+        setAllCVNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n))
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error)
+    }
+  }
+
+  const handleViewJob = async (notif: any) => {
+    if (!notif.is_read) {
+      await handleMarkAsRead(notif.id)
+    }
+    window.open(`/jobs/${notif.job?.id}`, '_blank')
+  }
+
   const filterNotifications = (notifications: any[]) => {
     let filtered = notifications
 
@@ -265,26 +290,57 @@ export default function Notifications() {
                           </div>
                         )}
 
-                        <button
-                          onClick={() => window.open(`/jobs/${notif.job?.id}`, '_blank')}
-                          style={{
-                            width: '100%',
-                            background: '#10b981',
-                            color: 'white',
-                            border: 'none',
-                            padding: '0.75rem',
-                            borderRadius: '8px',
-                            fontSize: '0.95rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            transition: 'background 0.2s'
-                          }}
-                          onMouseOver={(e) => e.currentTarget.style.background = '#059669'}
-                          onMouseOut={(e) => e.currentTarget.style.background = '#10b981'}
-                        >
-                          <i className="fas fa-external-link-alt" style={{ marginRight: '0.5rem' }}></i>
-                          View Job
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                          <button
+                            onClick={() => handleViewJob(notif)}
+                            style={{
+                              flex: 1,
+                              background: '#10b981',
+                              color: 'white',
+                              border: 'none',
+                              padding: '0.75rem',
+                              borderRadius: '8px',
+                              fontSize: '0.95rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              transition: 'background 0.2s'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = '#059669'}
+                            onMouseOut={(e) => e.currentTarget.style.background = '#10b981'}
+                          >
+                            <i className="fas fa-external-link-alt" style={{ marginRight: '0.5rem' }}></i>
+                            View Job
+                          </button>
+
+                          {!notif.is_read && (
+                            <button
+                              onClick={() => handleMarkAsRead(notif.id)}
+                              title="Mark as read"
+                              style={{
+                                width: '45px',
+                                background: '#f1f5f9',
+                                color: '#64748b',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.background = '#e2e8f0'
+                                e.currentTarget.style.color = '#10b981'
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.background = '#f1f5f9'
+                                e.currentTarget.style.color = '#64748b'
+                              }}
+                            >
+                              <i className="fas fa-check"></i>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -419,26 +475,57 @@ export default function Notifications() {
                           </div>
                         )}
 
-                        <button
-                          onClick={() => window.open(`/jobs/${notif.job?.id}`, '_blank')}
-                          style={{
-                            width: '100%',
-                            background: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            padding: '0.75rem',
-                            borderRadius: '8px',
-                            fontSize: '0.95rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            transition: 'background 0.2s'
-                          }}
-                          onMouseOver={(e) => e.currentTarget.style.background = '#2563eb'}
-                          onMouseOut={(e) => e.currentTarget.style.background = '#3b82f6'}
-                        >
-                          <i className="fas fa-external-link-alt" style={{ marginRight: '0.5rem' }}></i>
-                          View Job
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                          <button
+                            onClick={() => handleViewJob(notif)}
+                            style={{
+                              flex: 1,
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              padding: '0.75rem',
+                              borderRadius: '8px',
+                              fontSize: '0.95rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              transition: 'background 0.2s'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = '#2563eb'}
+                            onMouseOut={(e) => e.currentTarget.style.background = '#3b82f6'}
+                          >
+                            <i className="fas fa-external-link-alt" style={{ marginRight: '0.5rem' }}></i>
+                            View Job
+                          </button>
+
+                          {!notif.is_read && (
+                            <button
+                              onClick={() => handleMarkAsRead(notif.id)}
+                              title="Mark as read"
+                              style={{
+                                width: '45px',
+                                background: '#f1f5f9',
+                                color: '#64748b',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.background = '#e2e8f0'
+                                e.currentTarget.style.color = '#3b82f6'
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.background = '#f1f5f9'
+                                e.currentTarget.style.color = '#64748b'
+                              }}
+                            >
+                              <i className="fas fa-check"></i>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
