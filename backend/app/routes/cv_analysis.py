@@ -47,10 +47,14 @@ def analyze_cv():
         return jsonify({'error': 'Invalid file type. Only PDF, DOC, DOCX allowed'}), 400
     
     try:
-        # Get user's profile
+        # Get user's profile (create if doesn't exist)
         profile = Profile.query.filter_by(user_id=user_id).first()
         if not profile:
-            return jsonify({'error': 'Profile not found'}), 404
+            print(f"⚠️ Profile not found for user {user_id}, creating one...")
+            profile = Profile(user_id=user_id)
+            db.session.add(profile)
+            db.session.commit()
+            print(f"✅ Created profile for user {user_id}")
         
         # Save uploaded file temporarily
         filename = secure_filename(file.filename)
