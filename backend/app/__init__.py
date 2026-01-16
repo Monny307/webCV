@@ -83,10 +83,12 @@ def create_app(config_name=None):
     init_oauth(app)
     
     # Health check endpoint
+    @app.route('/api/health')
     @app.route('/health')
     def health_check():
         return {'status': 'healthy', 'message': 'WebCV Backend API is running'}, 200
     
+    @app.route('/api')
     @app.route('/')
     def index():
         return {
