@@ -12,6 +12,8 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [savedJobIds, setSavedJobIds] = useState<string[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     setMounted(true)
@@ -23,7 +25,7 @@ export default function Home() {
     }
 
     // Load jobs
-    fetchJobs()
+    fetchJobs(currentPage)
 
     // Load saved job IDs (for heart icons)
     if (typeof window !== 'undefined') {
@@ -114,17 +116,31 @@ export default function Home() {
     }
   }
 
-  const fetchJobs = async () => {
+  const fetchJobs = async (page = 1) => {
+    setLoading(true)
     try {
-      const response = await fetch('/api/jobs?per_page=100')
+      const response = await fetch(`/api/jobs?page=${page}&per_page=100`)
       const data = await response.json()
       if (data.success) {
         setJobs(data.jobs)
+        setTotalPages(data.pages || 1)
+        setCurrentPage(data.page || 1)
       }
     } catch (error) {
       console.error('Error fetching jobs:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      fetchJobs(page)
+      // Scroll to jobs section
+      const jobsElement = document.getElementById('jobs')
+      if (jobsElement) {
+        jobsElement.scrollIntoView({ behavior: 'smooth' })
+      }
     }
   }
 
@@ -143,7 +159,15 @@ export default function Home() {
 
         {/* Jobs Section */}
         <section id="jobs" className={`section ${activeSection === 'jobs' ? 'active' : ''}`} style={{ display: activeSection === 'jobs' ? 'block' : 'none', minHeight: '100vh' }}>
-          <JobsSection jobs={jobs} loading={loading} savedJobIds={savedJobIds} onToggleSave={toggleSavedJob} />
+          <JobsSection
+            jobs={jobs}
+            loading={loading}
+            savedJobIds={savedJobIds}
+            onToggleSave={toggleSavedJob}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </section>
 
         {/* My Jobs Section */}
@@ -756,12 +780,18 @@ function JobsSection({
   jobs,
   loading,
   savedJobIds,
-  onToggleSave
+  onToggleSave,
+  currentPage,
+  totalPages,
+  onPageChange
 }: {
   jobs: Job[],
   loading: boolean,
   savedJobIds: string[],
-  onToggleSave: (jobId: string) => void
+  onToggleSave: (jobId: string) => void,
+  currentPage: number,
+  totalPages: number,
+  onPageChange: (page: number) => void
 }) {
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [activeFilterType, setActiveFilterType] = useState<string | null>(null)
@@ -1044,6 +1074,37 @@ function JobsSection({
           ))
         )}
       </div>
+
+      {/* Pagination component */}
+      {!loading && totalPages > 1 && (
+        <div className="pagination-wrapper front-pagination">
+          <button
+            className="pagination-btn prev-btn"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <i className="fas fa-angle-double-left"></i>
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <button
+              key={page}
+              className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+              onClick={() => onPageChange(page)}
+            >
+              {page}
+            </button>
+          ))}
+
+          <button
+            className="pagination-btn next-btn"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <i className="fas fa-angle-double-right"></i>
+          </button>
+        </div>
+      )}
 
       {/* Filter Modal */}
       {showFilterModal && (
