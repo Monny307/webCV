@@ -1975,6 +1975,82 @@ function MyJobsSection() {
     }
   }
 
+  // Handle selecting a past CV for recommendations
+  const handleSelectCVForRecommendation = async (cv: any) => {
+    setIsAnalyzingCV(true)
+    setShowUploadCVModal(false) // Close modal if open
+
+    try {
+      console.log(`🔍 Checking keywords for CV: ${cv.name} (${cv.id})`)
+      const token = localStorage.getItem('access_token')
+
+      // 1. Try to get existing keywords
+      const keywordRes = await fetch(`/api/profile/cvs/${cv.id}/keywords`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+
+      let keywords = []
+
+      if (keywordRes.ok) {
+        const data = await keywordRes.json()
+        if (data.keywords && data.keywords.length > 0) {
+          keywords = data.keywords
+          console.log('✅ Found existing keywords:', keywords)
+        }
+      }
+
+      // 2. If no keywords, try to analyze the CV (works for both files and scratch CVs)
+      if (keywords.length === 0) {
+        console.log('⚠️ No keywords found, triggering analysis...')
+        const analyzeRes = await fetch(`/api/profile/cvs/${cv.id}/analyze`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+
+        if (analyzeRes.ok) {
+          const data = await analyzeRes.json()
+          keywords = data.keywords || []
+
+          if (data.recommendations) {
+            const jobTitles = data.recommendations.map((r: any) => r.job_title)
+            setMlRecommendedTitles(jobTitles) // Update state for UI display
+            keywords = jobTitles
+          }
+
+          console.log('✅ Analysis complete. Keywords:', keywords)
+        } else {
+          const err = await analyzeRes.json()
+          console.warn('❌ Analysis failed:', err.message)
+          // Even if analysis fails (e.g. not enough text), we might have basic extracted data from scratch CV??
+          // But scratch CVs are generated WITH keywords, so step 1 should have caught them. 
+          // This fallback is mostly for older uploaded files.
+          alert(`Could not generate recommendations from this CV: ${err.message}`)
+          setIsAnalyzingCV(false)
+          return
+        }
+      }
+
+      // 3. Match jobs
+      if (keywords.length > 0) {
+        // Update ML titles for display
+        setMlRecommendedTitles(keywords)
+
+        // Match
+        await loadKeywordsAndMatchJobs(keywords)
+
+        alert(`✅ Loaded recommendations from "${cv.name}"!`)
+      } else {
+        alert('⚠️ No keywords could be extracted from this CV.')
+      }
+
+    } catch (error) {
+      console.error('Error selecting CV:', error)
+      alert('❌ An error occurred while processing the CV.')
+    } finally {
+      setIsAnalyzingCV(false)
+    }
+  }
+
   // Check auth status and load data accordingly
   useEffect(() => {
     setMounted(true)
@@ -2197,15 +2273,14 @@ function MyJobsSection() {
             </button>
           </div>
 
-          {/* Upload CV Button and Keywords */}
+          {/* Upload/Select CV Section */}
           <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <button
                 onClick={() => setShowUploadCVModal(true)}
                 className="btn-primary"
                 disabled={isAnalyzingCV}
                 style={{
-                  alignSelf: 'flex-start',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.5rem',
@@ -2215,8 +2290,82 @@ function MyJobsSection() {
                 }}
               >
                 <i className={isAnalyzingCV ? "fas fa-spinner fa-spin" : "fas fa-upload"}></i>
-                {isAnalyzingCV ? 'Analyzing CV...' : 'Upload CV for Job Matching'}
+                {isAnalyzingCV ? 'Analyzing...' : 'Upload New CV'}
               </button>
+
+              <div style={{ position: 'relative' }}>
+                <button
+                  onClick={() => setUploadOption(uploadOption === 'past' ? null : 'past')}
+                  className="btn-secondary"
+                  disabled={isAnalyzingCV || pastCVs.length === 0}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.75rem 1.5rem',
+                    background: 'white',
+                    border: '1px solid #d1d5db',
+                    color: '#374151',
+                    opacity: (isAnalyzingCV || pastCVs.length === 0) ? 0.7 : 1,
+                    cursor: (isAnalyzingCV || pastCVs.length === 0) ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  <i className="fas fa-list"></i>
+                  Select from Library
+                  <i className={`fas fa-chevron-${uploadOption === 'past' ? 'up' : 'down'}`} style={{ fontSize: '0.8em', marginLeft: '0.25rem' }}></i>
+                </button>
+
+                {/* Dropdown for Past CVs */}
+                {uploadOption === 'past' && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    marginTop: '0.5rem',
+                    background: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    width: '300px',
+                    maxHeight: '400px',
+                    overflowY: 'auto',
+                    zIndex: 50
+                  }}>
+                    <div style={{ padding: '0.75rem', borderBottom: '1px solid #f3f4f6', fontWeight: 600, color: '#64748b', fontSize: '0.9rem' }}>
+                      Your Saved CVs
+                    </div>
+                    {pastCVs.map(cv => (
+                      <div
+                        key={cv.id}
+                        onClick={() => {
+                          setUploadOption(null)
+                          handleSelectCVForRecommendation(cv)
+                        }}
+                        style={{
+                          padding: '0.75rem 1rem',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          borderBottom: '1px solid #f3f4f6',
+                          transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                      >
+                        <i className="fas fa-file-alt" style={{ color: 'var(--primary-orange)' }}></i>
+                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 500 }}>{cv.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                            {new Date(cv.upload_date).toLocaleDateString()}
+                            {cv.is_active && <span style={{ marginLeft: '0.5rem', color: '#10b981' }}>● Active</span>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Keywords Display */}

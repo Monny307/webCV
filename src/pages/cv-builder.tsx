@@ -194,48 +194,86 @@ export default function CVBuilder() {
     }
   }
 
-  const handleSaveAsCV = async () => {
+  const handleSaveCV = async () => {
     try {
       setSaving(true)
-      let cvName = prompt('Enter a name for your CV:', 'My Professional CV')
-      if (!cvName) {
-        setSaving(false)
-        return
+
+      let cvId = selectedCV?.id
+      let currentCV = selectedCV
+
+      // 1. If New CV, create shell first
+      if (!cvId) {
+        let cvName = prompt('Enter a name for your CV:', 'My Professional CV')
+        if (!cvName) {
+          setSaving(false)
+          return
+        }
+
+        // Check for duplicate names and auto-increment
+        const existingNames = pastCVs.map(cv => cv.name)
+        let finalName = cvName
+        let counter = 1
+        while (existingNames.includes(finalName)) {
+          finalName = `${cvName} ${counter}`
+          counter++
+        }
+
+        const token = localStorage.getItem('access_token')
+        const createRes = await fetch('/api/profile/cvs/create', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name: finalName })
+        })
+
+        if (!createRes.ok) {
+          const data = await createRes.json()
+          throw new Error(data.message || 'Failed to create CV')
+        }
+
+        const createData = await createRes.json()
+        cvId = createData.cv.id
+        currentCV = createData.cv
       }
 
-      // Check for duplicate names and auto-increment
-      const existingNames = pastCVs.map(cv => cv.name)
-      let finalName = cvName
-      let counter = 1
-      while (existingNames.includes(finalName)) {
-        finalName = `${cvName} ${counter}`
-        counter++
+      // 2. Save Builder Data
+      const builderData = {
+        fullname: fullName,
+        email,
+        phone,
+        location,
+        professional_summary: professionalSummary,
+        educations: educationList,
+        experiences: experienceList,
+        skills: skillsList,
+        languages: languagesList,
+        certifications: certificationsList
       }
 
       const token = localStorage.getItem('access_token')
-      const response = await fetch('/api/profile/cvs/create', {
-        method: 'POST',
+      const saveRes = await fetch(`/api/profile/cvs/${cvId}/builder-data`, {
+        method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name: finalName })
+        body: JSON.stringify(builderData)
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        alert(`✅ CV saved successfully as "${finalName}"!`)
-        setShowUploadDiv(false)
+      if (saveRes.ok) {
+        alert('✅ CV saved successfully!')
+        setSelectedCV(currentCV)
         fetchCVs()
-        // Set the newly created CV as selected
-        setSelectedCV(data.cv)
       } else {
-        const data = await response.json()
-        alert(`❌ Failed to save CV: ${data.message || 'Unknown error'}`)
+        const data = await saveRes.json()
+        alert(`❌ Failed to save CV data: ${data.message || 'Unknown error'}`)
       }
-    } catch (error) {
+
+    } catch (error: any) {
       console.error('Error saving CV:', error)
-      alert('❌ Error saving CV. Please try again.')
+      alert(`❌ Error saving CV: ${error.message || 'Please try again'}`)
     } finally {
       setSaving(false)
     }
@@ -492,11 +530,22 @@ export default function CVBuilder() {
               </div>
 
               <button
-                onClick={() => setShowUploadModal(true)}
+                onClick={() => {
+                  setSelectedCV(null)
+                  clearCV()
+                }}
                 className="btn-primary"
                 style={{ width: '100%', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
               >
-                <i className="fas fa-plus"></i> Create New CV
+                <i className="fas fa-plus"></i> Create CV from Scratch
+              </button>
+
+              <button
+                onClick={() => setShowUploadModal(true)}
+                className="btn-secondary"
+                style={{ width: '100%', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+              >
+                <i className="fas fa-upload"></i> Upload CV File
               </button>
 
               <div style={{
@@ -719,230 +768,122 @@ export default function CVBuilder() {
           </div>
 
           {/* Main Content - CV Storage Area */}
-          <div style={{ flex: 1, paddingTop: '2rem', paddingRight: '2rem', paddingBottom: '2rem' }}>
+          <div style={{ flex: 1, paddingBottom: '2rem', minWidth: 0 }}>
             <div style={{ background: 'white', borderRadius: '12px', padding: '2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <div>
-                  <h1 style={{ marginTop: 0, marginBottom: '0.5rem' }}>CV Storage</h1>
-                  {selectedCV ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <span style={{ fontSize: '1rem', color: 'var(--primary-orange)', fontWeight: 600 }}>
-                        Selected: {selectedCV.name}
-                      </span>
-                      {selectedCV.is_active && (
-                        <span style={{
-                          padding: '0.25rem 0.75rem',
-                          background: 'var(--primary-orange)',
-                          color: 'white',
-                          borderRadius: '12px',
-                          fontSize: '0.75rem',
-                          fontWeight: 600
-                        }}>
-                          ACTIVE CV
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <p style={{ margin: 0, color: 'var(--light-text)', fontSize: '0.95rem' }}>
-                      Select a CV from the left panel or upload a new one
-                    </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <h1 style={{ margin: 0 }}>
+                  {selectedCV ? `Editing: ${selectedCV.name}` : 'Create New CV'}
+                </h1>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  {selectedCV && (
+                    <button onClick={handleDownloadCV} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <i className="fas fa-download"></i> PDF
+                    </button>
                   )}
+                  <button
+                    onClick={handleSaveCV}
+                    className="btn-primary"
+                    disabled={saving}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                  >
+                    {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
+                    {saving ? 'Saving...' : 'Save CV'}
+                  </button>
                 </div>
               </div>
 
-              {/* Selected CV Actions */}
-              {selectedCV && (
-                <div style={{
-                  background: 'white',
-                  border: '2px solid var(--primary-orange)',
-                  borderRadius: '12px',
-                  padding: '2rem',
-                  marginBottom: '2rem'
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '1.5rem'
-                  }}>
-                    <div>
-                      <h3 style={{
-                        margin: '0 0 0.5rem 0',
-                        fontSize: '1.3rem',
-                        color: '#1e293b'
-                      }}>
-                        <i className="fas fa-file-alt" style={{ color: 'var(--primary-orange)', marginRight: '0.5rem' }}></i>
-                        {selectedCV.name}
-                      </h3>
-                      <p style={{ margin: 0, color: 'var(--light-text)', fontSize: '0.9rem' }}>
-                        <i className="fas fa-calendar"></i> Uploaded on {new Date(selectedCV.upload_date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </p>
-                    </div>
-                    {selectedCV.is_active && (
-                      <div style={{
-                        background: '#dcfce7',
-                        color: '#166534',
-                        padding: '0.75rem 1.25rem',
-                        borderRadius: '8px',
-                        fontWeight: 600,
-                        fontSize: '0.95rem'
-                      }}>
-                        <i className="fas fa-check-circle"></i> Active for Job Matching
-                      </div>
-                    )}
+              {/* Personal Information */}
+              <section style={{ marginBottom: '2rem' }}>
+                <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Personal Information</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '0.5rem' }}>Full Name</label>
+                    <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db' }} />
                   </div>
-
-                  {/* Action Buttons */}
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                    gap: '1rem'
-                  }}>
-                    {selectedCV.file_path && (
-                      <a
-                        href={`${selectedCV.file_path}`}
-                        download
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '0.5rem',
-                          padding: '1rem',
-                          background: 'var(--primary-orange)',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '8px',
-                          fontSize: '1rem',
-                          fontWeight: 600,
-                          textDecoration: 'none',
-                          cursor: 'pointer',
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = '#e67846'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'var(--primary-orange)'}
-                      >
-                        <i className="fas fa-download"></i>
-                        Download CV
-                      </a>
-                    )}
-
-                    {!selectedCV.is_active && (
-                      <button
-                        onClick={() => handleSetAsActive(selectedCV.id)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '0.5rem',
-                          padding: '1rem',
-                          background: '#10b981',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '8px',
-                          fontSize: '1rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = '#059669'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = '#10b981'}
-                      >
-                        <i className="fas fa-check-circle"></i>
-                        Set as Active
-                      </button>
-                    )}
-
-                    <button
-                      onClick={() => {
-                        if (confirm('Are you sure you want to delete this CV?')) {
-                          handleDeleteCV(selectedCV.id)
-                          setSelectedCV(null)
-                        }
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.5rem',
-                        padding: '1rem',
-                        background: '#ef4444',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontSize: '1rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        transition: 'background 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#dc2626'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = '#ef4444'}
-                    >
-                      <i className="fas fa-trash"></i>
-                      Delete CV
-                    </button>
-
-                    <button
-                      onClick={() => setSelectedCV(null)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.5rem',
-                        padding: '1rem',
-                        background: '#64748b',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontSize: '1rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        transition: 'background 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#475569'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = '#64748b'}
-                    >
-                      <i className="fas fa-times"></i>
-                      Close
-                    </button>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '0.5rem' }}>Email</label>
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db' }} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '0.5rem' }}>Phone</label>
+                    <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db' }} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '0.5rem' }}>Location</label>
+                    <input type="text" value={location} onChange={e => setLocation(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db' }} />
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem' }}>Professional Summary</label>
+                    <textarea value={professionalSummary} onChange={e => setProfessionalSummary(e.target.value)} rows={4} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db' }} />
                   </div>
                 </div>
-              )}
+              </section>
 
-              {/* No CV Selected State */}
-              {!selectedCV && (
-                <div style={{
-                  textAlign: 'center',
-                  padding: '3rem 2rem',
-                  background: '#f8fafc',
-                  borderRadius: '12px',
-                  border: '2px dashed #cbd5e1'
-                }}>
-                  <i className="fas fa-hand-pointer" style={{
-                    fontSize: '3rem',
-                    color: '#94a3b8',
-                    marginBottom: '1rem',
-                    display: 'block'
-                  }}></i>
-                  <h3 style={{
-                    fontSize: '1.3rem',
-                    marginBottom: '0.5rem',
-                    color: '#475569'
-                  }}>
-                    Select a CV to Get Started
-                  </h3>
-                  <p style={{
-                    color: '#64748b',
-                    fontSize: '1rem',
-                    margin: '0 0 1.5rem 0'
-                  }}>
-                    Choose a CV from your library on the left, or upload a new one using the button above.
-                  </p>
+              {/* Education */}
+              <section style={{ marginBottom: '2rem' }}>
+                <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Education</h2>
+                {educationList.map((edu, idx) => (
+                  <div key={idx} style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', position: 'relative' }}>
+                    <button onClick={() => setEducationList(prev => prev.filter((_, i) => i !== idx))} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}><i className="fas fa-trash"></i></button>
+                    <h4 style={{ margin: '0 0 0.25rem 0' }}>{edu.degree}</h4>
+                    <p style={{ margin: 0, color: '#64748b' }}>{edu.institution} ({edu.year})</p>
+                  </div>
+                ))}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', background: '#f8fafc', padding: '1rem', borderRadius: '8px' }}>
+                  <input placeholder="Degree (e.g. BSc Computer Science)" value={currentEducation.degree} onChange={e => setCurrentEducation({ ...currentEducation, degree: e.target.value })} style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db' }} />
+                  <input placeholder="Institution" value={currentEducation.institution} onChange={e => setCurrentEducation({ ...currentEducation, institution: e.target.value })} style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db' }} />
+                  <input placeholder="Year" value={currentEducation.year} onChange={e => setCurrentEducation({ ...currentEducation, year: e.target.value })} style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db' }} />
+                  <button onClick={addEducation} className="btn-secondary" style={{ gridColumn: '1 / -1' }}>Add Education</button>
                 </div>
-              )}
+              </section>
+
+              {/* Experience */}
+              <section style={{ marginBottom: '2rem' }}>
+                <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Experience</h2>
+                {experienceList.map((exp, idx) => (
+                  <div key={idx} style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', position: 'relative' }}>
+                    <button onClick={() => setExperienceList(prev => prev.filter((_, i) => i !== idx))} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}><i className="fas fa-trash"></i></button>
+                    <h4 style={{ margin: '0 0 0.25rem 0' }}>{exp.title}</h4>
+                    <p style={{ margin: 0, color: '#64748b' }}>{exp.company} ({exp.duration})</p>
+                    <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.9rem' }}>{exp.description}</p>
+                  </div>
+                ))}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', background: '#f8fafc', padding: '1rem', borderRadius: '8px' }}>
+                  <input placeholder="Job Title" value={currentExperience.title} onChange={e => setCurrentExperience({ ...currentExperience, title: e.target.value })} style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db' }} />
+                  <input placeholder="Company" value={currentExperience.company} onChange={e => setCurrentExperience({ ...currentExperience, company: e.target.value })} style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db' }} />
+                  <input placeholder="Duration (e.g. 2020 - Present)" value={currentExperience.duration} onChange={e => setCurrentExperience({ ...currentExperience, duration: e.target.value })} style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db' }} />
+                  <textarea placeholder="Description" value={currentExperience.description} onChange={e => setCurrentExperience({ ...currentExperience, description: e.target.value })} style={{ gridColumn: '1 / -1', padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db' }} rows={3} />
+                  <button onClick={addExperience} className="btn-secondary" style={{ gridColumn: '1 / -1' }}>Add Experience</button>
+                </div>
+              </section>
+
+              {/* Skills */}
+              <section style={{ marginBottom: '2rem' }}>
+                <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Skills</h2>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+                  {skillsList.map((skill, idx) => (
+                    <span key={idx} style={{ background: '#e0f2fe', color: '#0369a1', padding: '0.5rem 1rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {skill.name}
+                      <button onClick={() => setSkillsList(prev => prev.filter((_, i) => i !== idx))} style={{ background: 'none', border: 'none', color: '#0369a1', cursor: 'pointer', fontSize: '0.8rem' }}><i className="fas fa-times"></i></button>
+                    </span>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <input placeholder="Skill Name" value={currentSkill.name} onChange={e => setCurrentSkill({ ...currentSkill, name: e.target.value })} style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db' }} />
+                  <button onClick={addSkill} className="btn-secondary">Add Skill</button>
+                </div>
+              </section>
+
+              <div style={{ marginTop: '2rem', textAlign: 'right' }}>
+                <button
+                  onClick={handleSaveCV}
+                  className="btn-primary"
+                  disabled={saving}
+                  style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
+                >
+                  {saving ? 'Saving...' : 'Save CV'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

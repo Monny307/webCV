@@ -593,17 +593,18 @@ def create_cv_from_profile():
         cv_name = data.get('name', 'My CV')
         
         # Create CV record without file (user built it)
+        # Create CV record without file (user built it)
         cv = CV(
             profile_id=profile.id,
             name=cv_name,
             file_path='scratch_cv',  # Placeholder for DB constraint
             status='completed',
             is_active=data.get('is_active', False),
-            extracted_fullname=None,
-            extracted_email=None,
-            extracted_phone=None,
-            extracted_location=None,
-            extracted_summary=None
+            extracted_fullname=profile.fullname,
+            extracted_email=profile.email,
+            extracted_phone=profile.phone,
+            extracted_location=profile.location,
+            extracted_summary=profile.professional_summary
         )
         
         # If this is set as active, deactivate others
@@ -611,6 +612,41 @@ def create_cv_from_profile():
             CV.query.filter_by(profile_id=profile.id).update({'is_active': False})
         
         db.session.add(cv)
+        db.session.flush() # Get ID
+        
+        # Generate keywords for recommendation system
+        # Combine skills, experience titles, and summary
+        keywords = []
+        if profile.skills:
+            keywords.extend([s.name for s in profile.skills])
+        
+        full_text_parts = []
+        if profile.professional_summary:
+            full_text_parts.append(profile.professional_summary)
+        
+        if profile.experiences:
+            for exp in profile.experiences:
+                full_text_parts.append(f"{exp.title} at {exp.company}")
+                keywords.append(exp.title)
+                if exp.description:
+                    full_text_parts.append(exp.description)
+        
+        if profile.educations:
+            for edu in profile.educations:
+                full_text_parts.append(f"{edu.degree} at {edu.institution}")
+        
+        full_text = "\n".join(full_text_parts)
+        
+        # Create CVKeyword entry
+        from app.models import CVKeyword
+        cv_keyword = CVKeyword(
+            cv_id=cv.id,
+            keywords=list(set(keywords)), # Remove duplicates
+            extracted_text=full_text[:5000],  # Store first 5000 chars
+            extraction_method='profile_data'
+        )
+        db.session.add(cv_keyword)
+        
         db.session.commit()
         
         return jsonify({
@@ -702,6 +738,60 @@ def save_cv_builder_data(cv_id):
             'languages': data.get('languages', []),
             'certifications': data.get('certifications', [])
         }
+        
+        # Regenerate keywords for recommendation system
+        keywords = []
+        builder_data = cv.cv_builder_data
+        
+        # Add skills
+        for skill in builder_data.get('skills', []):
+            if isinstance(skill, dict) and skill.get('name'):
+                keywords.append(skill['name'])
+            elif isinstance(skill, str):
+                keywords.append(skill)
+                
+        full_text_parts = []
+        
+        # Add summary
+        if builder_data.get('professional_summary'):
+            full_text_parts.append(builder_data['professional_summary'])
+            
+        # Add experience
+        for exp in builder_data.get('experiences', []):
+            title = exp.get('title', '')
+            company = exp.get('company', '')
+            desc = exp.get('description', '')
+            if title:
+                keywords.append(title)
+                full_text_parts.append(f"{title} at {company}")
+            if desc:
+                full_text_parts.append(desc)
+                
+        # Add education
+        for edu in builder_data.get('educations', []):
+            degree = edu.get('degree', '')
+            inst = edu.get('institution', '')
+            if degree:
+                full_text_parts.append(f"{degree} at {inst}")
+                
+        full_text = "\n".join(full_text_parts)
+        
+        # Update or create CVKeyword
+        from app.models import CVKeyword
+        existing_keywords = CVKeyword.query.filter_by(cv_id=cv.id).first()
+        
+        if existing_keywords:
+            existing_keywords.keywords = list(set(keywords))
+            existing_keywords.extracted_text = full_text[:5000]
+            existing_keywords.extraction_method = 'builder_data'
+        else:
+            cv_keyword = CVKeyword(
+                cv_id=cv.id,
+                keywords=list(set(keywords)),
+                extracted_text=full_text[:5000],
+                extraction_method='builder_data'
+            )
+            db.session.add(cv_keyword)
         
         db.session.commit()
         
