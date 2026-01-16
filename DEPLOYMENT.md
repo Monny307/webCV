@@ -53,7 +53,7 @@ This guide explains how to deploy the **Ahhchip Next.js** project to your VPS us
     ```
 2.  **Build and Start Containers**:
     ```bash
-    docker-compose up -d --build
+    docker compose up -d --build
     ```
 3.  **Verify Services**:
     Check if the containers are running:
@@ -75,19 +75,19 @@ The application will be available at:
 
 ### View Logs
 ```bash
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### Stop Services
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### Update Deployment
 Whenever you push new code to GitHub, run these on the VPS:
 ```bash
 git pull origin main
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ---
