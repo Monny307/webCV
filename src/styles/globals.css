@@ -3657,10 +3657,6 @@ h1, h2, h3, h4, h5, h6,
     color: #db4437;
 }
 
-.btn-social-facebook:hover {
-    border-color: #1877f2;
-    color: #1877f2;
-}
 
 .btn-social-linkedin:hover {
     border-color: #0077b5;
@@ -3692,11 +3688,6 @@ h1, h2, h3, h4, h5, h6,
     background: #fff5f5;
 }
 
-.btn-social-icon.btn-social-facebook:hover {
-    border-color: #1877f2;
-    color: #1877f2;
-    background: #f0f7ff;
-}
 
 .btn-social-icon.btn-social-linkedin:hover {
     border-color: #0077b5;

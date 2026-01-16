@@ -35,9 +35,6 @@ export default function Signup() {
     window.location.href = '/api/auth/oauth/google'
   }
 
-  const handleFacebookSignup = () => {
-    window.location.href = '/api/auth/oauth/facebook'
-  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -200,14 +197,6 @@ export default function Signup() {
                   onClick={handleGoogleSignup}
                 >
                   <i className="fab fa-google"></i>
-                </button>
-                <button
-                  type="button"
-                  className="btn-social-icon btn-social-facebook"
-                  title="Sign up with Facebook"
-                  onClick={handleFacebookSignup}
-                >
-                  <i className="fab fa-facebook-f"></i>
                 </button>
               </div>
 
