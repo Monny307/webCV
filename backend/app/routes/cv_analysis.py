@@ -35,6 +35,15 @@ def analyze_cv():
     """
     user_id = get_jwt_identity()
     
+    # Verify user exists (prevent foreign key errors from stale tokens)
+    from app.models import User
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({
+            'error': 'User not found. Please log out and log in again.',
+            'code': 'INVALID_TOKEN'
+        }), 401
+    
     if 'file' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
     
