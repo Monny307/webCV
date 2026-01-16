@@ -89,10 +89,17 @@ export default function CVBuilder() {
     name: '', organization: '', year: '', description: ''
   })
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
   useEffect(() => {
     setIsMounted(true)
-    // Don't load profile on mount - only when CV is clicked
-    fetchCVs()
+    const token = localStorage.getItem('access_token')
+    if (token) {
+      setIsLoggedIn(true)
+      fetchCVs()
+    } else {
+      setIsLoggedIn(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -115,6 +122,29 @@ export default function CVBuilder() {
       document.removeEventListener('click', handleClickOutside)
     }
   }, [showCVMenu])
+
+  if (isMounted && !isLoggedIn) {
+    return (
+      <Layout>
+        <div style={{ textAlign: 'center', padding: '4rem 2rem', maxWidth: '600px', margin: '0 auto' }}>
+          <i className="fas fa-lock" style={{ fontSize: '4rem', color: '#f97316', marginBottom: '1.5rem', display: 'block' }}></i>
+          <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#1e293b' }}>Sign In Required</h2>
+          <p style={{ color: '#64748b', marginBottom: '2rem', fontSize: '1.1rem' }}>
+            Please sign in to access the CV Builder and manage your CVs.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <button
+              className="btn-primary"
+              onClick={() => router.push('/login')}
+              style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
+            >
+              <i className="fas fa-sign-in-alt"></i> Sign In Now
+            </button>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
 
   const fetchProfile = async () => {
     try {

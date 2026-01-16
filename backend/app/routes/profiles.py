@@ -596,9 +596,14 @@ def create_cv_from_profile():
         cv = CV(
             profile_id=profile.id,
             name=cv_name,
-            file_path=None,  # No file, built from profile
+            file_path='scratch_cv',  # Placeholder for DB constraint
             status='completed',
-            is_active=data.get('is_active', False)
+            is_active=data.get('is_active', False),
+            extracted_fullname=None,
+            extracted_email=None,
+            extracted_phone=None,
+            extracted_location=None,
+            extracted_summary=None
         )
         
         # If this is set as active, deactivate others

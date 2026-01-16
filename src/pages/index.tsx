@@ -2999,215 +2999,61 @@ function MyJobsSection() {
               }}>&times;</button>
             </div>
 
-            {!uploadOption ? (
-              <div style={{ padding: '2rem' }}>
-                <p style={{ marginBottom: '1.5rem', color: '#64748b' }}>Choose how you want to upload your CV:</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <button
-                    onClick={() => setUploadOption('upload')}
-                    style={{
-                      padding: '1rem',
-                      background: '#f8fafc',
-                      border: '2px solid #e2e8f0',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '1rem',
-                      fontSize: '1rem',
-                      fontWeight: 600,
-                      color: '#1e293b'
-                    }}
-                  >
-                    <i className="fas fa-upload" style={{ fontSize: '1.5rem', color: 'var(--primary-orange)' }}></i>
-                    <div style={{ textAlign: 'left' }}>
-                      <div>Upload New CV</div>
-                      <div style={{ fontSize: '0.875rem', fontWeight: 400, color: '#64748b', marginTop: '0.25rem' }}>
-                        Upload a new CV file from your device
-                      </div>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => setUploadOption('past')}
-                    style={{
-                      padding: '1rem',
-                      background: '#f8fafc',
-                      border: '2px solid #e2e8f0',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '1rem',
-                      fontSize: '1rem',
-                      fontWeight: 600,
-                      color: '#1e293b'
-                    }}
-                  >
-                    <i className="fas fa-file-alt" style={{ fontSize: '1.5rem', color: 'var(--primary-orange)' }}></i>
-                    <div style={{ textAlign: 'left' }}>
-                      <div>Choose from Past CVs</div>
-                      <div style={{ fontSize: '0.875rem', fontWeight: 400, color: '#64748b', marginTop: '0.25rem' }}>
-                        Select from your previously uploaded CVs
-                      </div>
-                    </div>
-                  </button>
+            {/* Direct Upload Form (Selection Removed) */}
+            <div style={{ padding: '2rem' }}>
+              <div style={{
+                background: '#fef3c7',
+                border: '1px solid #fbbf24',
+                borderRadius: '8px',
+                padding: '1rem',
+                marginBottom: '1.5rem',
+                display: 'flex',
+                gap: '0.75rem'
+              }}>
+                <i className="fas fa-exclamation-triangle" style={{ color: '#f59e0b', fontSize: '1.25rem', flexShrink: 0 }}></i>
+                <div style={{ fontSize: '0.875rem', color: '#92400e' }}>
+                  <strong>Important:</strong> Please upload a text-based resume (not a scanned image).
+                  Our AI will extract your resume text and analyze it. If the analysis seems wrong, please fix your resume and upload again.
                 </div>
               </div>
-            ) : uploadOption === 'upload' ? (
-              <div style={{ padding: '2rem' }}>
-                <div style={{
-                  background: '#fef3c7',
-                  border: '1px solid #fbbf24',
-                  borderRadius: '8px',
-                  padding: '1rem',
-                  marginBottom: '1.5rem',
-                  display: 'flex',
-                  gap: '0.75rem'
-                }}>
-                  <i className="fas fa-exclamation-triangle" style={{ color: '#f59e0b', fontSize: '1.25rem', flexShrink: 0 }}></i>
-                  <div style={{ fontSize: '0.875rem', color: '#92400e' }}>
-                    <strong>Important:</strong> Please upload a text-based resume (not a scanned image).
-                    Our AI will extract your resume text and analyze it. If the analysis seems wrong, please fix your resume and upload again.
-                  </div>
-                </div>
-                <div style={{
-                  border: '2px dashed #d1d5db',
-                  borderRadius: '8px',
-                  padding: '3rem 2rem',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  marginBottom: '1.5rem'
-                }}
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <i className="fas fa-cloud-upload-alt" style={{ fontSize: '3rem', color: '#9ca3af', marginBottom: '1rem', display: 'block' }}></i>
-                  <p style={{ color: '#64748b', marginBottom: '0.5rem' }}>Click to upload or drag and drop</p>
-                  <p style={{ fontSize: '0.875rem', color: '#94a3b8' }}>PDF, DOC, DOCX (MAX. 5MB)</p>
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  style={{ display: 'none' }}
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      // Validate file type
-                      const fileExt = file.name.split('.').pop()?.toLowerCase()
-                      if (!['pdf', 'doc', 'docx'].includes(fileExt || '')) {
-                        alert('❌ Please upload a PDF, DOC, or DOCX file')
-                        return
-                      }
-
-                      setShowUploadCVModal(false)
-                      setUploadOption(null)
-
-                      // Call ML API to analyze CV
-                      await handleCVUploadForML(file)
+              <div style={{
+                border: '2px dashed #d1d5db',
+                borderRadius: '8px',
+                padding: '3rem 2rem',
+                textAlign: 'center',
+                cursor: 'pointer',
+                marginBottom: '1.5rem'
+              }}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <i className="fas fa-cloud-upload-alt" style={{ fontSize: '3rem', color: '#9ca3af', marginBottom: '1rem', display: 'block' }}></i>
+                <p style={{ color: '#64748b', marginBottom: '0.5rem' }}>Click to upload or drag and drop</p>
+                <p style={{ fontSize: '0.875rem', color: '#94a3b8' }}>PDF, DOC, DOCX (MAX. 5MB)</p>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx"
+                style={{ display: 'none' }}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    // Validate file type
+                    const fileExt = file.name.split('.').pop()?.toLowerCase()
+                    if (!['pdf', 'doc', 'docx'].includes(fileExt || '')) {
+                      alert('❌ Please upload a PDF, DOC, or DOCX file')
+                      return
                     }
-                  }}
-                />
-                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                  <button className="btn-secondary" onClick={() => setUploadOption(null)}>
-                    Back
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div style={{ padding: '2rem' }}>
-                <p style={{ marginBottom: '1rem', color: '#64748b' }}>Select a past CV to use:</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                  {pastCVs.map((cv) => (
-                    <div
-                      key={cv.id}
-                      onClick={async () => {
-                        // Load keywords for this CV
-                        const token = localStorage.getItem('access_token')
-                        if (token) {
-                          setIsAnalyzingCV(true)
-                          try {
-                            const response = await fetch(`/api/profile/cvs/${cv.id}/keywords`, {
-                              headers: { 'Authorization': `Bearer ${token}` }
-                            })
-                            if (response.ok) {
-                              const data = await response.json()
-                              if (data.keywords && data.keywords.length > 0) {
-                                const matchedCount = await loadKeywordsAndMatchJobs(data.keywords)
-                                setIsAnalyzingCV(false)
-                                alert(`✅ Loaded CV: ${cv.name}\n🎯 ${data.keywords.length} AI keywords loaded\n💼 Matched ${matchedCount} jobs`)
-                              } else {
-                                // No keywords found, analyze the CV now
-                                console.log('🔍 No keywords found, analyzing CV...')
-                                const analyzeResponse = await fetch(`/api/profile/cvs/${cv.id}/analyze`, {
-                                  method: 'POST',
-                                  headers: { 'Authorization': `Bearer ${token}` }
-                                })
 
-                                if (analyzeResponse.ok) {
-                                  const analyzeData = await analyzeResponse.json()
-                                  if (analyzeData.keywords && analyzeData.keywords.length > 0) {
-                                    const matchedCount = await loadKeywordsAndMatchJobs(analyzeData.keywords)
-                                    setIsAnalyzingCV(false)
-                                    alert(`✅ Analyzed CV: ${cv.name}\n🎯 Generated ${analyzeData.keywords.length} AI keywords\n💼 Matched ${matchedCount} jobs`)
-                                  } else {
-                                    setIsAnalyzingCV(false)
-                                    alert(`⚠️ Could not analyze CV: ${cv.name}\n\n${analyzeData.message || 'No recommendations generated'}`)
-                                  }
-                                } else {
-                                  const errorData = await analyzeResponse.json()
-                                  setIsAnalyzingCV(false)
-                                  alert(`❌ Failed to analyze CV\n\n${errorData.message || 'Please upload a new CV file for analysis'}`)
-                                }
-                              }
-                            }
-                          } catch (error) {
-                            console.error('Error loading CV keywords:', error)
-                            setIsAnalyzingCV(false)
-                            alert(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`)
-                          }
-                        }
-                        setShowUploadCVModal(false)
-                        setUploadOption(null)
-                      }}
-                      style={{
-                        padding: '1rem',
-                        background: cv.is_active ? '#f0f9ff' : '#f8fafc',
-                        border: `2px solid ${cv.is_active ? '#3b82f6' : '#e2e8f0'}`,
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                      }}
-                    >
-                      <div>
-                        <div style={{ fontWeight: 600, color: '#1e293b', marginBottom: '0.25rem' }}>{cv.name}</div>
-                        <div style={{ fontSize: '0.875rem', color: '#64748b' }}>
-                          {cv.upload_date ? new Date(cv.upload_date).toLocaleDateString() : 'Unknown date'}
-                        </div>
-                      </div>
-                      {cv.is_active && (
-                        <span style={{
-                          padding: '0.25rem 0.75rem',
-                          background: '#3b82f6',
-                          color: 'white',
-                          borderRadius: '12px',
-                          fontSize: '0.75rem',
-                          fontWeight: 600
-                        }}>
-                          Current
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                  <button className="btn-secondary" onClick={() => setUploadOption(null)}>
-                    Back
-                  </button>
-                </div>
-              </div>
-            )}
+                    setShowUploadCVModal(false)
+                    setUploadOption(null)
+
+                    // Call ML API to analyze CV
+                    await handleCVUploadForML(file)
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
       )}
