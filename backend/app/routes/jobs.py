@@ -122,7 +122,7 @@ def create_job():
         
         # Create notifications for matching CVs
         from app.routes.notifications import check_and_create_notifications
-        check_and_create_notifications(str(new_job.id))
+        check_and_create_notifications(new_job.id)
         
         return jsonify({
             'success': True,

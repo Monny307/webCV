@@ -151,9 +151,20 @@ def check_and_create_notifications(job_id):
     This function should be called after a job is added or scraped.
     """
     import re
+    from uuid import UUID
+    
+    def is_khmer(text):
+        # Khmer Unicode range: \u1780-\u17FF
+        return any('\u1780' <= char <= '\u17FF' for char in text)
+
     try:
+        # Ensure job_id is a UUID object
+        if isinstance(job_id, str):
+            job_id = UUID(job_id)
+            
         job = Job.query.get(job_id)
         if not job:
+            print(f"⚠️ Job {job_id} not found in database")
             return
         
         # Prepare job text for matching
@@ -165,7 +176,9 @@ def check_and_create_notifications(job_id):
         
         # Get all users with CVs
         profiles = Profile.query.all()
+        print(f"🔍 Checking notifications for job: '{job.title}' across {len(profiles)} profiles")
         
+        notifications_count = 0
         for profile in profiles:
             # Check active CV keywords
             active_cv = CV.query.filter_by(profile_id=profile.id, is_active=True).first()
@@ -175,13 +188,12 @@ def check_and_create_notifications(job_id):
                     matched_keywords = []
                     for keyword in cv_keywords.keywords:
                         keyword_lower = keyword.lower()
-                        # Use word boundary matching for better accuracy
-                        if re.search(r'\b' + re.escape(keyword_lower) + r'\b', combined_text):
+                        # Use word boundary matching for English, substring for Khmer
+                        if re.search(r'\b' + re.escape(keyword_lower) + r'\b', combined_text) or \
+                           (is_khmer(keyword_lower) and keyword_lower in combined_text):
                             matched_keywords.append(keyword)
                     
-                    # Create notification if there are matches
                     if matched_keywords:
-                        # Check if notification already exists
                         existing = JobNotification.query.filter_by(
                             user_id=profile.user_id,
                             job_id=job_id,
@@ -198,6 +210,7 @@ def check_and_create_notifications(job_id):
                                 is_read=False
                             )
                             db.session.add(notification)
+                            notifications_count += 1
             
             # Check past/inactive CV keywords
             inactive_cvs = CV.query.filter_by(profile_id=profile.id, is_active=False).all()
@@ -207,13 +220,11 @@ def check_and_create_notifications(job_id):
                     matched_keywords = []
                     for keyword in cv_keywords.keywords:
                         keyword_lower = keyword.lower()
-                        # Use word boundary matching
-                        if re.search(r'\b' + re.escape(keyword_lower) + r'\b', combined_text):
+                        if re.search(r'\b' + re.escape(keyword_lower) + r'\b', combined_text) or \
+                           (is_khmer(keyword_lower) and keyword_lower in combined_text):
                             matched_keywords.append(keyword)
                     
-                    # Create notification if there are matches
                     if matched_keywords:
-                        # Check if notification already exists
                         existing = JobNotification.query.filter_by(
                             user_id=profile.user_id,
                             job_id=job_id,
@@ -231,9 +242,10 @@ def check_and_create_notifications(job_id):
                                 is_read=False
                             )
                             db.session.add(notification)
+                            notifications_count += 1
         
         db.session.commit()
-        print(f"✅ Notifications created for job: {job.title}")
+        print(f"✅ Created {notifications_count} notifications for job: '{job.title}'")
         
     except Exception as e:
         db.session.rollback()
