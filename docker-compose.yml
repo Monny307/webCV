@@ -38,11 +38,9 @@ services:
   frontend:
     build:
       context: .
-      args:
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://152.42.177.31/api}
     container_name: webcv_frontend
     environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://152.42.177.31/api}
+      - NODE_ENV=production
     depends_on:
       - backend
     networks:
