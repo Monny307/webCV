@@ -40,7 +40,40 @@ def get_active_cv_notifications():
         return jsonify({'error': str(e)}), 500
 
 
+@notifications_bp.route('/api/notifications/job-alerts', methods=['GET'])
+@jwt_required()
+def get_job_alert_notifications():
+    """Get notifications for jobs matching JobAlert criteria"""
+    try:
+        current_user_id = get_jwt_identity()
+        
+        # Get notifications for job alerts
+        notifications = JobNotification.query.filter_by(
+            user_id=current_user_id,
+            notification_type='job_alert'
+        ).order_by(JobNotification.created_at.desc()).limit(50).all()
+        
+        # Include job details
+        result = []
+        for notif in notifications:
+            job = Job.query.get(notif.job_id)
+            if job:
+                notif_dict = notif.to_dict()
+                notif_dict['job'] = job.to_dict()
+                # Find the matched alert title if possible
+                from app.models import JobAlert
+                # In our matching logic we set matched_keywords to [alert.title] if no keywords matched
+                # Here we can just send it as is.
+                result.append(notif_dict)
+        
+        return jsonify({'notifications': result})
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @notifications_bp.route('/api/notifications/all-cvs', methods=['GET'])
+
 @jwt_required()
 def get_all_cvs_notifications():
     """Get notifications for jobs matching past/inactive CV keywords"""
@@ -117,17 +150,140 @@ def get_unread_count():
             is_read=False
         ).count()
         
+        job_alerts_count = JobNotification.query.filter_by(
+            user_id=current_user_id,
+            notification_type='job_alert',
+            is_read=False
+        ).count()
+        
+        total = active_cv_count + past_cvs_count + job_alerts_count
+        
         return jsonify({
             'active_cv': active_cv_count,
             'past_cvs': past_cvs_count,
-            'total': active_cv_count + past_cvs_count
+            'job_alerts': job_alerts_count,
+            'total': total
         })
+
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
+
+def check_job_alerts(job_id):
+    """
+    Check if a new job matches any user's JobAlert and create notifications.
+    """
+    try:
+        from app.models import JobAlert
+        
+        # Ensure job_id is a UUID object
+        if isinstance(job_id, str):
+            job_id = UUID(job_id)
+            
+        job = Job.query.get(job_id)
+        if not job:
+            print(f"INFO: Job {job_id} not found in database for alert check")
+            return
+        
+        # Prepare job text for matching
+        job_title = job.title.lower()
+        job_desc = job.description.lower() if job.description else ''
+        job_reqs = job.requirements.lower() if hasattr(job, 'requirements') and job.requirements else ''
+        combined_text = f"{job_title} {job_desc} {job_reqs}"
+        
+        # Get all active job alerts
+        alerts = JobAlert.query.filter_by(is_active=True).all()
+        print(f"INFO: Checking job alerts for job: '{job.title}' across {len(alerts)} active alerts")
+        
+        notifications_count = 0
+        def is_khmer(text):
+            return any('\u1780' <= char <= '\u17FF' for char in text)
+
+        for alert in alerts:
+            match = True
+            matched_keywords = []
+            
+            # 1. Match Keywords
+            if alert.keywords:
+                # Support both comma-separated and space-separated keywords
+                keywords = [k.strip() for k in re.split(r'[,;|\s]+', alert.keywords) if k.strip()]
+                print(f"DEBUG: Alert keywords: {keywords}")
+                keyword_match = False
+                for kw in keywords:
+                    kw_lower = kw.lower()
+                    word_match = re.search(r'\b' + re.escape(kw_lower) + r'\b', combined_text)
+                    khmer_match = is_khmer(kw_lower) and kw_lower in combined_text
+                    print(f"DEBUG: Checking '{kw_lower}': word_match={bool(word_match)}, khmer_match={khmer_match}")
+                    if word_match or khmer_match:
+                        matched_keywords.append(kw)
+                        keyword_match = True
+                
+                if not keyword_match:
+                    print(f"DEBUG: Keyword match failed for alert '{alert.title}'")
+                    match = False
+            
+            # 2. Match Location
+            if match and alert.location:
+                print(f"DEBUG: Checking location '{alert.location.lower()}' in '{job.location.lower()}'")
+                if alert.location.lower() not in job.location.lower():
+                    print(f"DEBUG: Location match failed")
+                    match = False
+            
+            # 3. Match Category
+            if match and alert.category:
+                if alert.category.lower() not in job.category.lower():
+                    match = False
+            
+            # 4. Match Job Type
+            if match and alert.job_type:
+                if alert.job_type.lower() not in job.job_type.lower():
+                    match = False
+            
+            # 5. Salary Match (if available)
+            if match and (alert.salary_min or alert.salary_max):
+                # This is tricky as job.salary is a string like "$500 - $1000" or "Negotiable"
+                # For now, we'll skip strict salary matching unless we can parse it reliably
+                pass
+
+            if match:
+                print(f"DEBUG: Final match for alert '{alert.title}' is True")
+                # Check if notification already exists
+                existing = JobNotification.query.filter_by(
+                    user_id=alert.user_id,
+                    job_id=job_id,
+                    notification_type='job_alert'
+                ).first()
+                
+                if existing:
+                    print(f"DEBUG: Notification already exists for user {alert.user_id}")
+                else:
+                    print(f"DEBUG: Creating new job_alert notification for user {alert.user_id}")
+                    notification = JobNotification(
+                        user_id=alert.user_id,
+                        job_id=job_id,
+                        notification_type='job_alert',
+                        matched_keywords=matched_keywords if matched_keywords else [alert.title],
+                        is_read=False
+                    )
+                    db.session.add(notification)
+                    alert.last_sent = datetime.utcnow()
+                    notifications_count += 1
+            else:
+                print(f"DEBUG: Final match for alert '{alert.title}' is False")
+        
+        db.session.commit()
+        if notifications_count > 0:
+            print(f"[SUCCESS]: Created {notifications_count} job alert notifications for job: '{job.title}'")
+            
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ERROR]: Error checking job alerts: {str(e)}")
+
+
 def check_and_create_notifications(job_id):
+
     """
     Check if a new job matches any user's CV keywords and create notifications.
     This function should be called after a job is added or scraped.
@@ -143,7 +299,7 @@ def check_and_create_notifications(job_id):
             
         job = Job.query.get(job_id)
         if not job:
-            print(f"⚠️ Job {job_id} not found in database")
+            print(f"INFO: Job {job_id} not found in database")
             return
         
         # Prepare job text for matching
@@ -155,7 +311,7 @@ def check_and_create_notifications(job_id):
         
         # Get all users with CVs
         profiles = Profile.query.all()
-        print(f"🔍 Checking notifications for job: '{job.title}' across {len(profiles)} profiles")
+        print(f"INFO: Checking notifications for job: '{job.title}' across {len(profiles)} profiles")
         
         notifications_count = 0
         for profile in profiles:
@@ -224,8 +380,12 @@ def check_and_create_notifications(job_id):
                             notifications_count += 1
         
         db.session.commit()
-        print(f"✅ Created {notifications_count} notifications for job: '{job.title}'")
+        print(f"[SUCCESS]: Created {notifications_count} CV notifications for job: '{job.title}'")
+        
+        # Also check job alerts
+        check_job_alerts(job_id)
         
     except Exception as e:
+
         db.session.rollback()
-        print(f"❌ Error creating notifications: {str(e)}")
+        print(f"[ERROR]: Error creating notifications: {str(e)}")
